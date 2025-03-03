@@ -17,7 +17,6 @@ use crate::zobrist::Zobrist;
 use std::convert::{TryFrom, TryInto};
 use std::fmt;
 use std::hash::{Hash, Hasher};
-use std::mem;
 use std::str::FromStr;
 
 /// A representation of a chess board.  That's why you're here, right?
