@@ -1,4 +1,4 @@
-use crate::error::Error;
+use crate::error::{Error, InvalidInfo};
 use std::str::FromStr;
 
 /// Describe a file (column) on a chess board
@@ -72,7 +72,12 @@ impl FromStr for File {
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         if s.len() < 1 {
-            return Err(Error::InvalidFile);
+            return Err(Error::InvalidFile {
+                info: InvalidInfo::InputStringTooShort {
+                    expected: 1,
+                    recieved: s.len(),
+                },
+            });
         }
         match s.chars().next().unwrap() {
             'a' => Ok(File::A),
@@ -83,7 +88,9 @@ impl FromStr for File {
             'f' => Ok(File::F),
             'g' => Ok(File::G),
             'h' => Ok(File::H),
-            _ => Err(Error::InvalidFile),
+            e => Err(Error::InvalidFile {
+                info: InvalidInfo::FileCharNotMatched { recieved: e },
+            }),
         }
     }
 }

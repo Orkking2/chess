@@ -1,5 +1,5 @@
 use crate::color::Color;
-use crate::error::Error;
+use crate::error::{Error, InvalidInfo};
 use crate::file::File;
 use crate::rank::Rank;
 use std::fmt;
@@ -975,19 +975,28 @@ impl FromStr for Square {
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         if s.len() < 2 {
-            return Err(Error::InvalidSquare);
+            return Err(Error::InvalidSquare {
+                info: InvalidInfo::InputStringTooShort {
+                    expected: 2,
+                    recieved: s.len(),
+                },
+            });
         }
         let ch: Vec<char> = s.chars().collect();
         match ch[0] {
             'a' | 'b' | 'c' | 'd' | 'e' | 'f' | 'g' | 'h' => {}
-            _ => {
-                return Err(Error::InvalidSquare);
+            e => {
+                return Err(Error::InvalidSquare {
+                    info: InvalidInfo::FileCharNotMatched { recieved: e },
+                });
             }
         }
         match ch[1] {
             '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' => {}
-            _ => {
-                return Err(Error::InvalidSquare);
+            e => {
+                return Err(Error::InvalidSquare {
+                    info: InvalidInfo::RankCharNotMatched { recieved: e },
+                });
             }
         }
         Ok(Square::make_square(

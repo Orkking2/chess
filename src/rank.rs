@@ -1,4 +1,4 @@
-use crate::error::Error;
+use crate::error::{Error, InvalidInfo};
 use std::str::FromStr;
 
 /// Describe a rank (row) on a chess board
@@ -73,7 +73,12 @@ impl FromStr for Rank {
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         if s.len() < 1 {
-            return Err(Error::InvalidRank);
+            return Err(Error::InvalidRank {
+                info: InvalidInfo::InputStringTooShort {
+                    expected: 1,
+                    recieved: s.len(),
+                },
+            });
         }
         match s.chars().next().unwrap() {
             '1' => Ok(Rank::First),
@@ -84,7 +89,9 @@ impl FromStr for Rank {
             '6' => Ok(Rank::Sixth),
             '7' => Ok(Rank::Seventh),
             '8' => Ok(Rank::Eighth),
-            _ => Err(Error::InvalidRank),
+            e => Err(Error::InvalidRank {
+                info: InvalidInfo::RankCharNotMatched { recieved: e },
+            }),
         }
     }
 }

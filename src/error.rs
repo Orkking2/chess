@@ -14,8 +14,10 @@ pub enum Error {
     InvalidBoard,
 
     /// An attempt was made to create a square from an invalid string
-    #[fail(display = "The string specified does not contain a valid algebraic notation square")]
-    InvalidSquare,
+    #[fail(display = "The string specified does not contain a valid algebraic notation square. {}", info)]
+    InvalidSquare{
+        info: InvalidInfo,
+    },
 
     /// An attempt was made to create a move from an invalid SAN string
     #[fail(display = "The string specified does not contain a valid SAN notation move")]
@@ -26,10 +28,33 @@ pub enum Error {
     InvalidUciMove,
 
     /// An attempt was made to convert a string not equal to "1"-"8" to a rank
-    #[fail(display = "The string specified does not contain a valid rank")]
-    InvalidRank,
+    #[fail(display = "The string specified does not contain a valid rank. {}", info)]
+    InvalidRank{
+        info: InvalidInfo
+    },
 
     /// An attempt was made to convert a string not equal to "a"-"h" to a file
-    #[fail(display = "The string specified does not contain a valid file")]
-    InvalidFile,
+    #[fail(display = "The string specified does not contain a valid file. {}", info)]
+    InvalidFile {
+        info: InvalidInfo
+    },
+}
+
+#[derive(Clone, Debug, Fail)]
+pub enum InvalidInfo {
+    #[fail(display = "Input is too short (expected {} but recieved {})", expected, recieved)]
+    InputStringTooShort {
+        expected: usize,
+        recieved: usize,
+    },
+
+    #[fail(display = "File char ({}) was not matched", recieved)]
+    FileCharNotMatched {
+        recieved: char
+    },
+    
+    #[fail(display = "Rank char ({}) was not matched", recieved)]
+    RankCharNotMatched {
+        recieved: char,
+    },
 }
