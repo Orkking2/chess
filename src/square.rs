@@ -112,7 +112,7 @@ impl Square {
         if self.get_rank() == Rank::Eighth {
             None
         } else {
-            Some(Square::make_square(self.get_rank().up(), self.get_file()))
+            Some(self.uup())
         }
     }
 
@@ -132,7 +132,7 @@ impl Square {
         if self.get_rank() == Rank::First {
             None
         } else {
-            Some(Square::make_square(self.get_rank().down(), self.get_file()))
+            Some(self.udown())
         }
     }
 
@@ -152,7 +152,7 @@ impl Square {
         if self.get_file() == File::A {
             None
         } else {
-            Some(Square::make_square(self.get_rank(), self.get_file().left()))
+            Some(self.uleft())
         }
     }
 
@@ -172,10 +172,7 @@ impl Square {
         if self.get_file() == File::H {
             None
         } else {
-            Some(Square::make_square(
-                self.get_rank(),
-                self.get_file().right(),
-            ))
+            Some(self.uright())
         }
     }
 
