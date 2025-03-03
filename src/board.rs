@@ -807,6 +807,40 @@ impl Board {
         self.en_passant
     }
 
+    /// Give me the en_passant target, if it exists.
+    /// 
+    /// ```
+    /// use chess::{Board, ChessMove, Square};
+    ///
+    /// let move1 = ChessMove::new(Square::D2,
+    ///                            Square::D4,
+    ///                            None);
+    ///
+    /// let move2 = ChessMove::new(Square::H7,
+    ///                            Square::H5,
+    ///                            None);
+    ///
+    /// let move3 = ChessMove::new(Square::D4,
+    ///                            Square::D5,
+    ///                            None);
+    ///
+    /// let move4 = ChessMove::new(Square::E7,
+    ///                            Square::E5,
+    ///                            None);
+    ///
+    /// let board = Board::default().make_move_new(move1)
+    ///                             .make_move_new(move2)
+    ///                             .make_move_new(move3)
+    ///                             .make_move_new(move4);
+    ///
+    /// assert_eq!(board.en_passant_target(), Some(Square::E6));
+    /// ```
+    #[inline]
+    pub fn en_passant_target(self) -> Option<Square> {
+        let color = !self.side_to_move();
+        self.en_passant().map(|square| square.ubackward(color))
+    }
+
     /// Set the en_passant square.  Note: This must only be called when self.en_passant is already
     /// None.
     fn set_ep(&mut self, sq: Square) {
