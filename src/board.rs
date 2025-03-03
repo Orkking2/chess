@@ -807,7 +807,7 @@ impl Board {
         self.en_passant
     }
 
-    /// Give me the en_passant target, if it exists.
+    /// Give me the en_passant target square, if it exists.
     /// 
     /// ```
     /// use chess::{Board, ChessMove, Square};
