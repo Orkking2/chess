@@ -82,3 +82,14 @@ impl Not for Color {
         }
     }
 }
+
+impl From<Color> for bool {
+    /// While in the backend, `Color::White == 0` and `Color::Black == 1`, 
+    /// it is more intuitive for `Color::White` to evaluate `true`, as it goes first
+    fn from(value: Color) -> Self {
+        match value {
+            Color::White => true,
+            Color::Black => false,
+        }
+    }
+}
