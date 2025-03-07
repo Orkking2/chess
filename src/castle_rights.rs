@@ -54,11 +54,13 @@ const CASTLES_PER_SQUARE: [[u8; 64]; 2] = [
 impl CastleRights {
     /// Can I castle kingside?
     pub fn has_kingside(&self) -> bool {
+        // Self::Both == 3 == 0b11 & 0b01 == 0b01 👍
         self.to_index() & 1 == 1
     }
 
     /// Can I castle queenside?
     pub fn has_queenside(&self) -> bool {
+        // Self::Both == 3 == 0b11 & 0b10 == 0b10 👍
         self.to_index() & 2 == 2
     }
 
