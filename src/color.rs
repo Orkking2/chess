@@ -4,8 +4,8 @@ use std::ops::Not;
 /// Represent a color.
 #[derive(PartialOrd, PartialEq, Eq, Copy, Clone, Debug, Hash)]
 pub enum Color {
-    White,
-    Black,
+    White = 0,
+    Black = 1,
 }
 
 /// How many colors are there?
