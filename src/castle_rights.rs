@@ -28,6 +28,22 @@ pub const ALL_CASTLE_RIGHTS: [CastleRights; NUM_CASTLE_RIGHTS] = [
     CastleRights::Both,
 ];
 
+//? Could this be turned into a logic function? Or does this simply increase complexity...
+/*
+fn square_to_castle_rights(color: Color, square: Square) -> CastleRights {
+    let rank = if color.into() { Rank::1 } else { Rank::8 };
+    if square.get_rank() != rank.to_index() {
+        CastleRights::NoRights
+    } else {
+        match square.get_file() {
+            File::A => CastleRights::QueenSide,
+            File::E => CastleRights::Both,
+            File::H => CastleRights::KingSide,
+            _ => CastleRights::None,
+        }
+    }
+}
+*/
 const CASTLES_PER_SQUARE: [[u8; 64]; 2] = [
     [
         2, 0, 0, 0, 3, 0, 0, 1, // 1
@@ -64,6 +80,7 @@ impl CastleRights {
         self.to_index() & 2 == 2
     }
 
+    /// What rights does this square enable?
     pub fn square_to_castle_rights(color: Color, sq: Square) -> CastleRights {
         CastleRights::from_index(unsafe {
             *CASTLES_PER_SQUARE
