@@ -92,7 +92,10 @@ impl Board {
     /// # Ok(())
     /// # }
     /// ```
-    #[deprecated(since = "3.1.0", note = "please use `Board::from_str(fen)?` instead")]
+    #[deprecated(
+        since = "3.1.0",
+        note = "Internally this is a wrapper for `Board::from_str`, please use this function directly instead"
+    )]
     #[inline]
     pub fn from_fen(fen: String) -> Option<Board> {
         Board::from_str(&fen).ok()
@@ -100,7 +103,7 @@ impl Board {
 
     #[deprecated(
         since = "3.0.0",
-        note = "please use the MoveGen structure instead.  It is faster and more idiomatic."
+        note = "Internally this wraps `MoveGen::new_legal`, please use this structure instead"
     )]
     #[inline]
     pub fn enumerate_moves(&self, moves: &mut [ChessMove; 256]) -> usize {
@@ -807,7 +810,7 @@ impl Board {
     }
 
     /// Give me the en_passant target square, if it exists.
-    /// 
+    ///
     /// ```
     /// use chess::{Board, ChessMove, Square};
     ///
