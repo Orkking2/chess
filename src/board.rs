@@ -34,7 +34,7 @@ pub struct Board {
 }
 
 /// What is the status of this game?
-#[derive(Copy, Clone, PartialEq, PartialOrd, Debug)]
+#[derive(Copy, Clone, PartialEq, Debug)]
 pub enum BoardStatus {
     Ongoing,
     Stalemate,
