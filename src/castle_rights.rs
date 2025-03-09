@@ -134,6 +134,7 @@ impl CastleRights {
             CastleRights::QueenSide => BitBoard::set(my_backrank, File::A),
             CastleRights::Both => {
                 BitBoard::set(my_backrank, File::A)
+                    //? Why is this a carrot (^) and not a pipe (|)
                     ^ BitBoard::set(my_backrank, File::H)
             }
         }
