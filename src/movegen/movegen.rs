@@ -18,11 +18,11 @@ pub struct SquareAndBitBoard {
 }
 
 impl SquareAndBitBoard {
-    pub fn new(sq: Square, bb: BitBoard, promotion: bool) -> SquareAndBitBoard {
+    pub fn new(square: Square, bitboard: BitBoard, promotion: bool) -> SquareAndBitBoard {
         SquareAndBitBoard {
-            square: sq,
-            bitboard: bb,
-            promotion: promotion,
+            square,
+            bitboard,
+            promotion,
         }
     }
 }
