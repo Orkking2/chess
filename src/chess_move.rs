@@ -381,6 +381,8 @@ impl fmt::Display for ChessMove {
     }
 }
 
+//? Why does this exist?
+//? What does it even mean for a move to be "less" than another?
 impl Ord for ChessMove {
     fn cmp(&self, other: &ChessMove) -> Ordering {
         if self.source != other.source {
