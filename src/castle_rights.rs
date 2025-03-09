@@ -127,13 +127,14 @@ impl CastleRights {
 
     /// Which rooks can we "guarantee" we haven't moved yet?
     pub fn unmoved_rooks(&self, color: Color) -> BitBoard {
+        let my_backrank = color.to_my_backrank();
         match *self {
             CastleRights::NoRights => EMPTY,
-            CastleRights::KingSide => BitBoard::set(color.to_my_backrank(), File::H),
-            CastleRights::QueenSide => BitBoard::set(color.to_my_backrank(), File::A),
+            CastleRights::KingSide => BitBoard::set(my_backrank, File::H),
+            CastleRights::QueenSide => BitBoard::set(my_backrank, File::A),
             CastleRights::Both => {
-                BitBoard::set(color.to_my_backrank(), File::A)
-                    ^ BitBoard::set(color.to_my_backrank(), File::H)
+                BitBoard::set(my_backrank, File::A)
+                    ^ BitBoard::set(my_backrank, File::H)
             }
         }
     }
