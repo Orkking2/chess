@@ -11,10 +11,10 @@ use crate::magic::{KINGSIDE_CASTLE_SQUARES, QUEENSIDE_CASTLE_SQUARES};
 #[repr(u8)]
 #[derive(Copy, Clone, PartialEq, Eq, PartialOrd, Debug, Hash)]
 pub enum CastleRights {
-    NoRights = 0,
-    KingSide = 1,
-    QueenSide = 2,
-    Both = 3,
+    NoRights = 0b00,
+    Both = 0b11,
+    KingSide = 0b01,
+    QueenSide = 0b10,
 }
 
 /// How many different types of `CastleRights` are there?
