@@ -92,8 +92,7 @@ impl PawnType {
             ^ BitBoard::from_square(source)
             ^ BitBoard::from_square(dest);
 
-        let ksq =
-            (board.pieces(Piece::King) & board.color_combined(board.side_to_move())).to_square();
+        let ksq = board.king_square(board.side_to_move());
 
         let rooks = (board.pieces(Piece::Rook) | board.pieces(Piece::Queen))
             & board.color_combined(!board.side_to_move());
