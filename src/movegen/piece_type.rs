@@ -224,7 +224,7 @@ impl PieceType for KnightType {
         get_knight_moves(src) & mask
     }
 
-    #[inline(always)]
+    #[inline]
     fn legals<T>(movelist: &mut MoveList, board: &Board, mask: BitBoard)
     where
         T: CheckType,
