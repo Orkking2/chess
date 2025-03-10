@@ -948,7 +948,6 @@ impl Board {
     /// board.make_move(m, &mut result);
     /// assert_eq!(result.side_to_move(), Color::Black);
     /// ```
-    #[inline]
     pub fn make_move(&self, m: ChessMove, result: &mut Board) {
         *result = *self;
         result.remove_ep();
