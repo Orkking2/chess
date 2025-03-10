@@ -809,7 +809,7 @@ impl Board {
     /// assert_eq!(board.en_passant(), Some(Square::E5));
     /// ```
     #[inline]
-    pub fn en_passant(self) -> Option<Square> {
+    pub fn en_passant(&self) -> Option<Square> {
         self.en_passant
     }
 
@@ -842,7 +842,7 @@ impl Board {
     /// assert_eq!(board.en_passant_target(), Some(Square::E6));
     /// ```
     #[inline]
-    pub fn en_passant_target(self) -> Option<Square> {
+    pub fn en_passant_target(&self) -> Option<Square> {
         let color = !self.side_to_move();
         self.en_passant().map(|square| square.ubackward(color))
     }
