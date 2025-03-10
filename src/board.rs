@@ -1068,7 +1068,7 @@ impl Board {
         self.pinned = EMPTY;
         self.checkers = EMPTY;
 
-        let ksq = (self.pieces(Piece::King) & self.color_combined(self.side_to_move)).to_square();
+        let ksq = self.king_square(self.side_to_move);
 
         let pinners = self.color_combined(!self.side_to_move)
             & ((get_bishop_rays(ksq) & (self.pieces(Piece::Bishop) | self.pieces(Piece::Queen)))
