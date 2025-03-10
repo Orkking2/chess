@@ -299,6 +299,7 @@ impl Board {
         }
     }
 
+    // Todo Rewrite -- This doctest uses deprecated functions.
     /// Remove castle rights for a particular side.
     ///
     /// ```
@@ -335,7 +336,8 @@ impl Board {
         self.side_to_move
     }
 
-    /// Grab my `CastleRights`.
+    // Todo Rewrite -- This doctest uses deprecated functions.
+    /// Literally `board.castle_rights(board.side_to_move())`
     ///
     /// ```
     /// use chess::{Board, Color, CastleRights};
@@ -385,6 +387,7 @@ impl Board {
         self.remove_castle_rights(color, remove);
     }
 
+    // Todo Rewrite -- This doctest uses deprecated functions.
     /// My opponents `CastleRights`.
     ///
     /// ```
