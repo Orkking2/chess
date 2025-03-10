@@ -733,32 +733,39 @@ impl Board {
         if self.combined() & opp == EMPTY {
             None
         } else {
-            //naiive algorithm
-            /*
-            for p in ALL_PIECES {
-                if self.pieces(*p) & opp {
-                    return p;
-                }
-            } */
-            if (self.pieces(Piece::Pawn) ^ self.pieces(Piece::Knight) ^ self.pieces(Piece::Bishop))
-                & opp
-                != EMPTY
-            {
-                if self.pieces(Piece::Pawn) & opp != EMPTY {
-                    Some(Piece::Pawn)
-                } else if self.pieces(Piece::Knight) & opp != EMPTY {
-                    Some(Piece::Knight)
-                } else {
-                    Some(Piece::Bishop)
-                }
+            Some(unsafe { self.piece_on_unchecked(square) })
+        }
+    }
+
+    /// Get the piece on a particular `Square`, defaults to Piece::King after a full search of if/else tree.
+    #[inline]
+    pub unsafe fn piece_on_unchecked(&self, square: Square) -> Piece {
+        let opp = BitBoard::from_square(square);
+        //naiive algorithm
+        /*
+        for p in ALL_PIECES {
+            if self.pieces(*p) & opp {
+                return p;
+            }
+        } */
+        if (self.pieces(Piece::Pawn) ^ self.pieces(Piece::Knight) ^ self.pieces(Piece::Bishop))
+            & opp
+            != EMPTY
+        {
+            if self.pieces(Piece::Pawn) & opp != EMPTY {
+                Piece::Pawn
+            } else if self.pieces(Piece::Knight) & opp != EMPTY {
+                Piece::Knight
             } else {
-                if self.pieces(Piece::Rook) & opp != EMPTY {
-                    Some(Piece::Rook)
-                } else if self.pieces(Piece::Queen) & opp != EMPTY {
-                    Some(Piece::Queen)
-                } else {
-                    Some(Piece::King)
-                }
+                Piece::Bishop
+            }
+        } else {
+            if self.pieces(Piece::Rook) & opp != EMPTY {
+                Piece::Rook
+            } else if self.pieces(Piece::Queen) & opp != EMPTY {
+                Piece::Queen
+            } else {
+                Piece::King
             }
         }
     }
