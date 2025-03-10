@@ -92,25 +92,25 @@ impl MoveGen {
     #[inline(always)]
     fn enumerate_moves(board: &Board) -> MoveList {
         let checkers = *board.checkers();
-        let mask = !board.color_combined(board.side_to_move());
+        let unoccupied_by_me = !board.color_combined(board.side_to_move());
         let mut movelist = NoDrop::new(ArrayVec::<SquareAndBitBoard, 18>::new());
 
         if checkers == EMPTY {
-            PawnType::legals::<NotInCheckType>(&mut movelist, &board, mask);
-            KnightType::legals::<NotInCheckType>(&mut movelist, &board, mask);
-            BishopType::legals::<NotInCheckType>(&mut movelist, &board, mask);
-            RookType::legals::<NotInCheckType>(&mut movelist, &board, mask);
-            QueenType::legals::<NotInCheckType>(&mut movelist, &board, mask);
-            KingType::legals::<NotInCheckType>(&mut movelist, &board, mask);
+            PawnType::legals::<NotInCheckType>(&mut movelist, &board, unoccupied_by_me);
+            KnightType::legals::<NotInCheckType>(&mut movelist, &board, unoccupied_by_me);
+            BishopType::legals::<NotInCheckType>(&mut movelist, &board, unoccupied_by_me);
+            RookType::legals::<NotInCheckType>(&mut movelist, &board, unoccupied_by_me);
+            QueenType::legals::<NotInCheckType>(&mut movelist, &board, unoccupied_by_me);
+            KingType::legals::<NotInCheckType>(&mut movelist, &board, unoccupied_by_me);
         } else if checkers.popcnt() == 1 {
-            PawnType::legals::<InCheckType>(&mut movelist, &board, mask);
-            KnightType::legals::<InCheckType>(&mut movelist, &board, mask);
-            BishopType::legals::<InCheckType>(&mut movelist, &board, mask);
-            RookType::legals::<InCheckType>(&mut movelist, &board, mask);
-            QueenType::legals::<InCheckType>(&mut movelist, &board, mask);
-            KingType::legals::<InCheckType>(&mut movelist, &board, mask);
+            PawnType::legals::<InCheckType>(&mut movelist, &board, unoccupied_by_me);
+            KnightType::legals::<InCheckType>(&mut movelist, &board, unoccupied_by_me);
+            BishopType::legals::<InCheckType>(&mut movelist, &board, unoccupied_by_me);
+            RookType::legals::<InCheckType>(&mut movelist, &board, unoccupied_by_me);
+            QueenType::legals::<InCheckType>(&mut movelist, &board, unoccupied_by_me);
+            KingType::legals::<InCheckType>(&mut movelist, &board, unoccupied_by_me);
         } else {
-            KingType::legals::<InCheckType>(&mut movelist, &board, mask);
+            KingType::legals::<InCheckType>(&mut movelist, &board, unoccupied_by_me);
         }
 
         movelist
