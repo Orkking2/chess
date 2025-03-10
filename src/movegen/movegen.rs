@@ -31,9 +31,7 @@ pub type MoveList = NoDrop<ArrayVec<SquareAndBitBoard, 18>>;
 
 /// An incremental move generator
 ///
-/// This structure enumerates moves slightly slower than board.enumerate_moves(...),
-/// but has some extra features, such as:
-///
+/// It has the following features:
 /// * Being an iterator
 /// * Not requiring you to create a buffer
 /// * Only iterating moves that match a certain pattern
