@@ -12,11 +12,15 @@ use crate::magic::{
 };
 
 pub trait PieceType {
-    //? What is the purpose of this function
-    fn is(piece: Piece) -> bool;
     fn into_piece() -> Piece;
-    fn pseudo_legals(src: Square, color: Color, combined: BitBoard, mask: BitBoard) -> BitBoard;
+    //? What is the purpose of this function
+    #[allow(dead_code)]
     #[inline(always)]
+    fn is(piece: Piece) -> bool {
+        Self::into_piece() == piece
+    }
+    fn pseudo_legals(src: Square, color: Color, combined: BitBoard, mask: BitBoard) -> BitBoard;
+    #[inline]
     fn legals<T>(movelist: &mut MoveList, board: &Board, mask: BitBoard)
     where
         T: CheckType,
@@ -114,10 +118,7 @@ impl PawnType {
 }
 
 impl PieceType for PawnType {
-    fn is(piece: Piece) -> bool {
-        piece == Piece::Pawn
-    }
-
+    #[inline(always)]
     fn into_piece() -> Piece {
         Piece::Pawn
     }
@@ -196,10 +197,12 @@ impl PieceType for PawnType {
 }
 
 impl PieceType for BishopType {
+    #[inline(always)]
     fn is(piece: Piece) -> bool {
         piece == Piece::Bishop
     }
 
+    #[inline(always)]
     fn into_piece() -> Piece {
         Piece::Bishop
     }
@@ -211,10 +214,12 @@ impl PieceType for BishopType {
 }
 
 impl PieceType for KnightType {
+    #[inline(always)]
     fn is(piece: Piece) -> bool {
         piece == Piece::Knight
     }
 
+    #[inline(always)]
     fn into_piece() -> Piece {
         Piece::Knight
     }
@@ -267,6 +272,7 @@ impl PieceType for RookType {
         piece == Piece::Rook
     }
 
+    #[inline(always)]
     fn into_piece() -> Piece {
         Piece::Rook
     }
@@ -282,6 +288,7 @@ impl PieceType for QueenType {
         piece == Piece::Queen
     }
 
+    #[inline(always)]
     fn into_piece() -> Piece {
         Piece::Queen
     }
@@ -294,7 +301,7 @@ impl PieceType for QueenType {
 
 impl KingType {
     /// Is a particular king move legal?
-    #[inline(always)]
+    #[inline]
     pub fn legal_king_move(board: &Board, dest: Square) -> bool {
         let combined = board.combined()
             ^ (board.pieces(Piece::King) & board.color_combined(board.side_to_move()))
@@ -335,6 +342,7 @@ impl PieceType for KingType {
         piece == Piece::King
     }
 
+    #[inline(always)]
     fn into_piece() -> Piece {
         Piece::King
     }
@@ -344,7 +352,7 @@ impl PieceType for KingType {
         get_king_moves(src) & mask
     }
 
-    #[inline(always)]
+    #[inline]
     fn legals<T>(movelist: &mut MoveList, board: &Board, mask: BitBoard)
     where
         T: CheckType,
