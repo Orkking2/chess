@@ -738,6 +738,16 @@ impl Board {
     }
 
     /// Get the piece on a particular `Square`, defaults to Piece::King after a full search of if/else tree.
+    /// 
+    /// ```
+    /// use chess::{Board, Piece, Square};
+    ///
+    /// let board = Board::default();
+    ///
+    /// assert_eq!(unsafe { board.piece_on_unchecked(Square::A1) }, Piece::Rook);
+    /// // Would be None if you called Board::piece_on(...), but will default to Piece::King instead.
+    /// assert_eq!(unsafe { board.piece_on_unchecked(Square::D4) }, Piece::King);
+    /// ```
     #[inline]
     pub unsafe fn piece_on_unchecked(&self, square: Square) -> Piece {
         let opp = BitBoard::from_square(square);
