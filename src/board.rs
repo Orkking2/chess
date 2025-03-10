@@ -156,6 +156,7 @@ impl Board {
     /// assert_eq!(board.status(), BoardStatus::Checkmate);
     /// ```
     #[inline]
+    // Todo Optimize -- This function should not generate every legal move, it should generate only a single one.
     pub fn status(&self) -> BoardStatus {
         let moves = MoveGen::new_legal(&self).len();
         match moves {
