@@ -781,6 +781,15 @@ impl Board {
     }
 
     /// What color piece is on a particular square?
+    /// 
+    /// ```
+    /// use chess::{Board, Square, Color};
+    /// 
+    /// let board = Board::default();
+    /// 
+    /// assert_eq!(board.color_on(Square::A1), Some(Color::White));
+    /// assert_eq!(board.color_on(Square::A3), None);
+    /// ```
     #[inline]
     pub fn color_on(&self, square: Square) -> Option<Color> {
         if (self.color_combined(Color::White) & BitBoard::from_square(square)) != EMPTY {
