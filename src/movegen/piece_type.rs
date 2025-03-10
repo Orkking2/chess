@@ -12,6 +12,7 @@ use crate::magic::{
 };
 
 pub trait PieceType {
+    //? What is the purpose of this function
     fn is(piece: Piece) -> bool;
     fn into_piece() -> Piece;
     fn pseudo_legals(src: Square, color: Color, combined: BitBoard, mask: BitBoard) -> BitBoard;
@@ -126,7 +127,7 @@ impl PieceType for PawnType {
         get_pawn_moves(src, color, combined) & mask
     }
 
-    #[inline(always)]
+    #[inline]
     fn legals<T>(movelist: &mut MoveList, board: &Board, mask: BitBoard)
     where
         T: CheckType,
