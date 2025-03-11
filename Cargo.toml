@@ -16,7 +16,6 @@ documentation = "https://orkking2.github.io/chess/chess/index.html"
 [dependencies]
 arrayvec = { version = "0.7.2", default_features = false }
 nodrop = { version = "0.1.14", default_features = false }
-failure = { version = "0.1.6", optional = true }
 
 [profile.release]
 opt-level = 3
@@ -39,8 +38,7 @@ opt-level = 3
 
 [build-dependencies]
 rand = { version = "0.7.2", default_features = false, features = ["small_rng"] }
-failure = "0.1.6"
 
 [features]
 default = ["std"]
-std = ["dep:failure"]
+std = []
