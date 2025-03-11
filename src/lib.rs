@@ -1,4 +1,5 @@
 #![doc(html_root_url = "https://orkking2.github.io/chess/")]
+#![cfg_attr(not(feature="std"), no_std)]
 //! # Rust Chess Library
 //! This is a chess move generation library for rust.  It is designed to be fast, so that it can be
 //! used in a chess engine or UI without performance issues.
@@ -17,6 +18,9 @@
 //! assert_eq!(movegen.len(), 20);
 //! ```
 //!
+
+#[cfg(not(feature="std"))]
+extern crate core as std;
 
 mod board;
 pub use crate::board::*;
@@ -66,7 +70,9 @@ pub use crate::movegen::MoveGen;
 
 mod zobrist;
 
+#[cfg(feature="std")]
 mod game;
+#[cfg(feature="std")]
 pub use crate::game::{Action, Game, GameResult};
 
 mod board_builder;

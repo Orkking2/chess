@@ -97,6 +97,7 @@ impl Board {
         note = "Internally this is a wrapper for `Board::from_str`, please use this function directly instead"
     )]
     #[inline]
+    #[cfg(feature="std")]
     pub fn from_fen(fen: String) -> Option<Board> {
         Board::from_str(&fen).ok()
     }

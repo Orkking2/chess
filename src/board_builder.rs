@@ -288,7 +288,7 @@ impl fmt::Display for BoardBuilder {
                 }
 
                 if let Some((piece, color)) = self.pieces[square] {
-                    write!(f, "{}", piece.to_string(color))?;
+                    write!(f, "{}", piece.with_color(color))?;
                 } else {
                     count += 1;
                 }
@@ -315,12 +315,12 @@ impl fmt::Display for BoardBuilder {
         write!(
             f,
             "{}",
-            self.castle_rights[Color::White.to_index()].to_string(Color::White)
+            self.castle_rights[Color::White.to_index()].with_color(Color::White)
         )?;
         write!(
             f,
             "{}",
-            self.castle_rights[Color::Black.to_index()].to_string(Color::Black)
+            self.castle_rights[Color::Black.to_index()].with_color(Color::Black)
         )?;
         if self.castle_rights[0] == CastleRights::NoRights
             && self.castle_rights[1] == CastleRights::NoRights
