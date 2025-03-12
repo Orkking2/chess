@@ -994,8 +994,8 @@ impl FromStr for Square {
                 }
             }
             Ok(Square::make_square(
-                Rank::from_index((c1 as usize) - ('1' as usize)),
-                File::from_index((c2 as usize) - ('a' as usize)),
+                Rank::from_index((c2 as usize) - ('1' as usize)),
+                File::from_index((c1 as usize) - ('a' as usize)),
             ))
         } else {
             Err(InvalidError::Square)

@@ -295,8 +295,8 @@ impl ChessMove {
             }
         } else {
             let sq = Square::make_square(
-                source_rank.ok_or(error.clone())?,
-                source_file.ok_or(error.clone())?,
+                    source_rank.ok_or(error.clone())?,
+                    source_file.ok_or(error.clone())?,
             );
             source_rank = None;
             source_file = None;
@@ -352,7 +352,7 @@ impl ChessMove {
         //}
 
         // Ok, now we have all the data from the SAN move, in the following structures
-        // moveing_piece, source_rank, source_file, taks, dest, promotion, maybe_check_or_mate, and
+        // moving_piece, source_rank, source_file, taks, dest, promotion, maybe_check_or_mate, and
         // ep
 
         let mut found_move: Option<ChessMove> = None;
@@ -416,7 +416,7 @@ impl ChessMove {
         acc |= (source.to_int() as u16) << 10;
         acc |= (dest.to_int() as u16) << 4;
         acc |= promotion
-            .map(|promotion| (promotion as u8) as u16)
+            .map(|promotion| promotion as u16 + 1)
             .unwrap_or(0);
         acc
     }

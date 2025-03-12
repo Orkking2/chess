@@ -68,8 +68,8 @@ impl BoardBuilder {
     /// use chess::{BoardBuilder, Board, Square, Color, Piece};
     /// use std::convert::TryInto;
     ///
-    /// # use chess::Error;
-    /// # fn main() -> Result<(), Error> {
+    /// # use chess::InvalidError;
+    /// # fn main() -> Result<(), InvalidError> {
     /// let board: Board = BoardBuilder::new()
     ///     .piece(Square::A1, Piece::King, Color::White)
     ///     .piece(Square::A8, Piece::King, Color::Black)
@@ -92,8 +92,8 @@ impl BoardBuilder {
     /// use chess::{BoardBuilder, Board, Square, Color, Piece, CastleRights};
     /// use std::convert::TryInto;
     ///
-    /// # use chess::Error;
-    /// # fn main() -> Result<(), Error> {
+    /// # use chess::InvalidError;
+    /// # fn main() -> Result<(), InvalidError> {
     /// let board: Board = BoardBuilder::setup(
     ///         &[
     ///             (Square::A1, Piece::King, Color::White),
@@ -199,7 +199,7 @@ impl BoardBuilder {
     /// bb.castle_rights(Color::Black, CastleRights::Both);
     /// ```
     pub fn castle_rights(&mut self, color: Color, castle_rights: CastleRights) -> &mut Self {
-        unsafe { *self.castle_rights.get_unchecked_mut(color.into_index()) = castle_rights };
+        self.castle_rights[color.into_index()] = castle_rights;
         self
     }
 

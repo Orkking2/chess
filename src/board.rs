@@ -204,9 +204,9 @@ impl Board {
     /// ```
     /// use chess::Board;
     /// use std::str::FromStr;
-    /// # use chess::Error;
+    /// # use chess::InvalidError;
     ///
-    /// # fn main() -> Result<(), Error> {
+    /// # fn main() -> Result<(), InvalidError> {
     ///
     /// // This is no longer supported
     /// let init_position = Board::from_fen("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1".to_owned()).expect("Valid FEN");
