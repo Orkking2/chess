@@ -33,7 +33,7 @@ pub const ALL_CASTLE_RIGHTS: [CastleRights; NUM_CASTLE_RIGHTS] = [
 /*
 fn square_to_castle_rights(color: Color, square: Square) -> CastleRights {
     let rank = if color.into() { Rank::1 } else { Rank::8 };
-    if square.get_rank() != rank.to_index() {
+    if square.get_rank() != rank.into_index() {
         CastleRights::NoRights
     } else {
         match square.get_file() {
@@ -72,46 +72,46 @@ impl CastleRights {
     /// Can I castle kingside?
     pub fn has_kingside(&self) -> bool {
         // Self::Both == 3 -> 0b11 & 0b01 == 0b01 👍
-        self.to_index() & 1 == 1
+        self.into_index() & 1 == 1
     }
 
     /// Can I castle queenside?
     pub fn has_queenside(&self) -> bool {
         // Self::Both == 3 -> 0b11 & 0b10 == 0b10 👍
-        self.to_index() & 2 == 2
+        self.into_index() & 2 == 2
     }
 
     /// What rights does this square enable?
     pub fn square_to_castle_rights(color: Color, sq: Square) -> CastleRights {
         CastleRights::from_index(unsafe {
             *CASTLES_PER_SQUARE
-                .get_unchecked(color.to_index())
-                .get_unchecked(sq.to_index())
+                .get_unchecked(color.into_index())
+                .get_unchecked(sq.into_index())
         } as usize)
     }
 
     /// What squares need to be empty to castle kingside?
     pub fn kingside_squares(&self, color: Color) -> BitBoard {
-        unsafe { *KINGSIDE_CASTLE_SQUARES.get_unchecked(color.to_index()) }
+        unsafe { *KINGSIDE_CASTLE_SQUARES.get_unchecked(color.into_index()) }
     }
 
     /// What squares need to be empty to castle queenside?
     pub fn queenside_squares(&self, color: Color) -> BitBoard {
-        unsafe { *QUEENSIDE_CASTLE_SQUARES.get_unchecked(color.to_index()) }
+        unsafe { *QUEENSIDE_CASTLE_SQUARES.get_unchecked(color.into_index()) }
     }
 
     /// Remove castle rights, and return a new `CastleRights`.
     pub fn remove(&self, remove: CastleRights) -> CastleRights {
-        CastleRights::from_index(self.to_index() & !remove.to_index())
+        CastleRights::from_index(self.into_index() & !remove.into_index())
     }
 
     /// Add some castle rights, and return a new `CastleRights`.
     pub fn add(&self, add: CastleRights) -> CastleRights {
-        CastleRights::from_index(self.to_index() | add.to_index())
+        CastleRights::from_index(self.into_index() | add.into_index())
     }
 
     /// Convert `CastleRights` to `usize` for table lookups
-    pub fn to_index(&self) -> usize {
+    pub fn into_index(&self) -> usize {
         *self as usize
     }
 

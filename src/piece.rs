@@ -2,14 +2,15 @@ use crate::color::Color;
 use std::fmt;
 
 /// Represent a chess piece as a very simple enum
+#[repr(u8)]
 #[derive(PartialEq, Eq, Ord, PartialOrd, Copy, Clone, Debug, Hash)]
 pub enum Piece {
-    Pawn,
-    Knight,
-    Bishop,
-    Rook,
-    Queen,
-    King,
+    Pawn = 1,
+    Knight = 2,
+    Bishop = 3,
+    Rook = 4,
+    Queen = 5,
+    King = 6,
 }
 
 /// How many piece types are there?
@@ -34,8 +35,8 @@ pub const PROMOTION_PIECES: [Piece; 4] = [Piece::Queen, Piece::Knight, Piece::Ro
 impl Piece {
     /// Convert the `Piece` to a `usize` for table lookups.
     #[inline]
-    pub fn to_index(&self) -> usize {
-        *self as usize
+    pub const fn into_index(self) -> usize {
+        self as usize
     }
 
     /// Convert the `Piece` to its FEN `char`
@@ -68,7 +69,7 @@ impl Piece {
     /// ```
     #[inline]
     #[cfg(feature = "std")]
-    pub fn to_string(&self, color: Color) -> String {
+    pub fn to_string(self, color: Color) -> String {
         let piece = format!("{}", self);
         if color == Color::White {
             piece.to_uppercase()

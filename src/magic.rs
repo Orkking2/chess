@@ -12,13 +12,13 @@ include!(concat!(env!("OUT_DIR"), "/magic_gen.rs"));
 /// Get the rays for a bishop on a particular square.
 #[inline]
 pub fn get_bishop_rays(sq: Square) -> BitBoard {
-    unsafe { *RAYS.get_unchecked(BISHOP).get_unchecked(sq.to_index()) }
+    unsafe { *RAYS.get_unchecked(BISHOP).get_unchecked(sq.into_index()) }
 }
 
 /// Get the rays for a rook on a particular square.
 #[inline]
 pub fn get_rook_rays(sq: Square) -> BitBoard {
-    unsafe { *RAYS.get_unchecked(ROOK).get_unchecked(sq.to_index()) }
+    unsafe { *RAYS.get_unchecked(ROOK).get_unchecked(sq.into_index()) }
 }
 
 /// Get the moves for a rook on a particular square, given blockers blocking my movement.
@@ -84,13 +84,13 @@ pub fn get_bishop_moves_bmi(sq: Square, blockers: BitBoard) -> BitBoard {
 /// Get the king moves for a particular square.
 #[inline]
 pub fn get_king_moves(sq: Square) -> BitBoard {
-    unsafe { *KING_MOVES.get_unchecked(sq.to_index()) }
+    unsafe { *KING_MOVES.get_unchecked(sq.into_index()) }
 }
 
 /// Get the knight moves for a particular square.
 #[inline]
 pub fn get_knight_moves(sq: Square) -> BitBoard {
-    unsafe { *KNIGHT_MOVES.get_unchecked(sq.to_index()) }
+    unsafe { *KNIGHT_MOVES.get_unchecked(sq.into_index()) }
 }
 
 /// Get the pawn capture move for a particular square, given the pawn's color and the potential
@@ -99,8 +99,8 @@ pub fn get_knight_moves(sq: Square) -> BitBoard {
 pub fn get_pawn_attacks(sq: Square, color: Color, blockers: BitBoard) -> BitBoard {
     unsafe {
         *PAWN_ATTACKS
-            .get_unchecked(color.to_index())
-            .get_unchecked(sq.to_index())
+            .get_unchecked(color.into_index())
+            .get_unchecked(sq.into_index())
             & blockers
     }
 }
@@ -119,8 +119,8 @@ pub fn get_pawn_quiets(sq: Square, color: Color, blockers: BitBoard) -> BitBoard
             EMPTY
         } else {
             *PAWN_MOVES
-                .get_unchecked(color.to_index())
-                .get_unchecked(sq.to_index())
+                .get_unchecked(color.into_index())
+                .get_unchecked(sq.into_index())
                 & !blockers
         }
     }
@@ -139,8 +139,8 @@ pub fn get_pawn_moves(sq: Square, color: Color, blockers: BitBoard) -> BitBoard 
 pub fn line(sq1: Square, sq2: Square) -> BitBoard {
     unsafe {
         *LINE
-            .get_unchecked(sq1.to_index())
-            .get_unchecked(sq2.to_index())
+            .get_unchecked(sq1.into_index())
+            .get_unchecked(sq2.into_index())
     }
 }
 
@@ -149,27 +149,27 @@ pub fn line(sq1: Square, sq2: Square) -> BitBoard {
 pub fn between(sq1: Square, sq2: Square) -> BitBoard {
     unsafe {
         *BETWEEN
-            .get_unchecked(sq1.to_index())
-            .get_unchecked(sq2.to_index())
+            .get_unchecked(sq1.into_index())
+            .get_unchecked(sq2.into_index())
     }
 }
 
 /// Get a `BitBoard` that represents all the squares on a particular rank.
 #[inline]
 pub fn get_rank(rank: Rank) -> BitBoard {
-    unsafe { *RANKS.get_unchecked(rank.to_index()) }
+    unsafe { *RANKS.get_unchecked(rank.into_index()) }
 }
 
 /// Get a `BitBoard` that represents all the squares on a particular file.
 #[inline]
 pub fn get_file(file: File) -> BitBoard {
-    unsafe { *FILES.get_unchecked(file.to_index()) }
+    unsafe { *FILES.get_unchecked(file.into_index()) }
 }
 
 /// Get a `BitBoard` that represents the squares on the 1 or 2 files next to this file.
 #[inline]
 pub fn get_adjacent_files(file: File) -> BitBoard {
-    unsafe { *ADJACENT_FILES.get_unchecked(file.to_index()) }
+    unsafe { *ADJACENT_FILES.get_unchecked(file.into_index()) }
 }
 
 #[inline]

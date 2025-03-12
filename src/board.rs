@@ -3,7 +3,7 @@ use crate::board_builder::BoardBuilder;
 use crate::castle_rights::CastleRights;
 use crate::chess_move::ChessMove;
 use crate::color::{Color, ALL_COLORS, NUM_COLORS};
-use crate::error::Error;
+use crate::error::InvalidError;
 use crate::file::File;
 use crate::magic::{
     between, get_adjacent_files, get_bishop_rays, get_castle_moves, get_file, get_king_moves,
@@ -34,6 +34,7 @@ pub struct Board {
 }
 
 /// What is the status of this game?
+#[repr(u8)]
 #[derive(Copy, Clone, PartialEq, Debug)]
 pub enum BoardStatus {
     Ongoing,
@@ -43,10 +44,19 @@ pub enum BoardStatus {
 
 /// Construct the initial position.
 impl Default for Board {
+    /// ```text
+    /// ♜ ♞ ♝ ♛ ♚ ♝ ♞ ♜
+    /// ♟ ♟ ♟ ♟ ♟ ♟ ♟ ♟
+    /// . . . . . . . .
+    /// . . . . . . . .
+    /// . . . . . . . .
+    /// . . . . . . . .
+    /// ♙ ♙ ♙ ♙ ♙ ♙ ♙ ♙
+    /// ♖ ♘ ♗ ♕ ♔ ♗ ♘ ♖
+    /// ```
     #[inline]
     fn default() -> Board {
-        Board::from_str("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1")
-            .expect("Valid Position")
+        Self::STARTPOS
     }
 }
 
@@ -57,9 +67,125 @@ impl Hash for Board {
 }
 
 impl Board {
+    /// Represents the start position of a chess game.
+    /// ```text
+    /// ♜ ♞ ♝ ♛ ♚ ♝ ♞ ♜
+    /// ♟ ♟ ♟ ♟ ♟ ♟ ♟ ♟
+    /// . . . . . . . .
+    /// . . . . . . . .
+    /// . . . . . . . .
+    /// . . . . . . . .
+    /// ♙ ♙ ♙ ♙ ♙ ♙ ♙ ♙
+    /// ♖ ♘ ♗ ♕ ♔ ♗ ♘ ♖
+    /// ```
+    pub const STARTPOS: Self = {
+        const PAWN_BITBOARD: BitBoard = BitBoard::from_array([
+            0b0000_0000,
+            0b1111_1111,
+            0b0000_0000,
+            0b0000_0000,
+            0b0000_0000,
+            0b0000_0000,
+            0b1111_1111,
+            0b0000_0000,
+        ]);
+        const KNIGHT_BITBOARD: BitBoard = BitBoard::from_array([
+            0b0100_0010,
+            0b0000_0000,
+            0b0000_0000,
+            0b0000_0000,
+            0b0000_0000,
+            0b0000_0000,
+            0b0000_0000,
+            0b0100_0010,
+        ]);
+        const BISHOP_BITBOARD: BitBoard = BitBoard::from_array([
+            0b0010_0100,
+            0b0000_0000,
+            0b0000_0000,
+            0b0000_0000,
+            0b0000_0000,
+            0b0000_0000,
+            0b0000_0000,
+            0b0010_0100,
+        ]);
+        const ROOK_BITBOARD: BitBoard = BitBoard::from_array([
+            0b1000_0001,
+            0b0000_0000,
+            0b0000_0000,
+            0b0000_0000,
+            0b0000_0000,
+            0b0000_0000,
+            0b0000_0000,
+            0b1000_0001,
+        ]);
+        const QUEEN_BITBOARD: BitBoard = BitBoard::from_array([
+            0b0000_1000,
+            0b0000_0000,
+            0b0000_0000,
+            0b0000_0000,
+            0b0000_0000,
+            0b0000_0000,
+            0b0000_0000,
+            0b0000_1000,
+        ]);
+        const KING_BITBOARD: BitBoard = BitBoard::from_array([
+            0b0001_0000,
+            0b0000_0000,
+            0b0000_0000,
+            0b0000_0000,
+            0b0000_0000,
+            0b0000_0000,
+            0b0000_0000,
+            0b0001_0000,
+        ]);
+        const BLACK_BITBOARD: BitBoard = BitBoard::from_array([
+            0b1111_1111,
+            0b1111_1111,
+            0b0000_0000,
+            0b0000_0000,
+            0b0000_0000,
+            0b0000_0000,
+            0b0000_0000,
+            0b0000_0000,
+        ]);
+        const WHITE_BITBOARD: BitBoard = BitBoard::from_array([
+            0b0000_0000,
+            0b0000_0000,
+            0b0000_0000,
+            0b0000_0000,
+            0b0000_0000,
+            0b0000_0000,
+            0b1111_1111,
+            0b1111_1111,
+        ]);
+
+        const COMBINED_BITBOARD: BitBoard = BitBoard::new(BLACK_BITBOARD.0 | WHITE_BITBOARD.0);
+        const START_HASH: u64 = 11762218931632540;
+
+        Self {
+            pieces: [
+                PAWN_BITBOARD,
+                KNIGHT_BITBOARD,
+                BISHOP_BITBOARD,
+                ROOK_BITBOARD,
+                QUEEN_BITBOARD,
+                KING_BITBOARD,
+            ],
+            color_combined: [WHITE_BITBOARD, BLACK_BITBOARD],
+            combined: COMBINED_BITBOARD,
+            side_to_move: Color::White,
+            castle_rights: [CastleRights::Both; NUM_COLORS],
+            pinned: EMPTY,
+            checkers: EMPTY,
+            hash: START_HASH,
+            en_passant: None,
+        }
+    };
+
     /// Construct a new `Board` that is completely empty.
     /// Note: This does NOT give you the initial position.  Just a blank slate.
-    fn new() -> Board {
+    const fn new() -> Board {
         Board {
             pieces: [EMPTY; NUM_PIECES],
             color_combined: [EMPTY; NUM_COLORS],
@@ -97,7 +223,7 @@ impl Board {
         note = "Internally this is a wrapper for `Board::from_str`, please use this function directly instead"
     )]
     #[inline]
-    #[cfg(feature="std")]
+    #[cfg(feature = "std")]
     pub fn from_fen(fen: String) -> Option<Board> {
         Board::from_str(&fen).ok()
     }
@@ -159,7 +285,7 @@ impl Board {
     #[inline]
     // Todo Optimize -- This function should not generate every legal move, it should generate only a single one.
     pub fn status(&self) -> BoardStatus {
-        let moves = MoveGen::new_legal(&self).len();
+        let moves = MoveGen::new_legal(self).len();
         match moves {
             0 => {
                 if self.checkers == EMPTY {
@@ -187,7 +313,7 @@ impl Board {
     /// assert_eq!(*board.combined(), combined_should_be);
     /// ```
     #[inline]
-    pub fn combined(&self) -> &BitBoard {
+    pub const fn combined(&self) -> &BitBoard {
         &self.combined
     }
 
@@ -210,7 +336,7 @@ impl Board {
     /// ```
     #[inline]
     pub fn color_combined(&self, color: Color) -> &BitBoard {
-        unsafe { self.color_combined.get_unchecked(color.to_index()) }
+        unsafe { self.color_combined.get_unchecked(color.into_index()) }
     }
 
     /// Give me the `Square` the `color` king is on.
@@ -245,7 +371,7 @@ impl Board {
     /// ```
     #[inline]
     pub fn pieces(&self, piece: Piece) -> &BitBoard {
-        unsafe { self.pieces.get_unchecked(piece.to_index()) }
+        unsafe { self.pieces.get_unchecked(piece.into_index()) }
     }
 
     /// Grab the `CastleRights` for a particular side.
@@ -284,7 +410,7 @@ impl Board {
     /// ```
     #[inline]
     pub fn castle_rights(&self, color: Color) -> CastleRights {
-        unsafe { *self.castle_rights.get_unchecked(color.to_index()) }
+        unsafe { *self.castle_rights.get_unchecked(color.into_index()) }
     }
 
     /// Add castle rights for a particular side.  Note: this can create an invalid position.
@@ -295,7 +421,7 @@ impl Board {
     #[inline]
     pub fn add_castle_rights(&mut self, color: Color, add: CastleRights) {
         unsafe {
-            *self.castle_rights.get_unchecked_mut(color.to_index()) =
+            *self.castle_rights.get_unchecked_mut(color.into_index()) =
                 self.castle_rights(color).add(add);
         }
     }
@@ -319,7 +445,7 @@ impl Board {
     #[inline]
     pub fn remove_castle_rights(&mut self, color: Color, remove: CastleRights) {
         unsafe {
-            *self.castle_rights.get_unchecked_mut(color.to_index()) =
+            *self.castle_rights.get_unchecked_mut(color.into_index()) =
                 self.castle_rights(color).remove(remove);
         }
     }
@@ -333,7 +459,7 @@ impl Board {
     /// assert_eq!(board.side_to_move(), Color::White);
     /// ```
     #[inline]
-    pub fn side_to_move(&self) -> Color {
+    pub const fn side_to_move(&self) -> Color {
         self.side_to_move
     }
 
@@ -442,8 +568,8 @@ impl Board {
     /// Add or remove a piece from the bitboards in this struct.
     fn xor(&mut self, piece: Piece, bb: BitBoard, color: Color) {
         unsafe {
-            *self.pieces.get_unchecked_mut(piece.to_index()) ^= bb;
-            *self.color_combined.get_unchecked_mut(color.to_index()) ^= bb;
+            *self.pieces.get_unchecked_mut(piece.into_index()) ^= bb;
+            *self.color_combined.get_unchecked_mut(color.into_index()) ^= bb;
             self.combined ^= bb;
             self.hash ^= Zobrist::piece(piece, bb.to_square(), color);
         }
@@ -596,10 +722,8 @@ impl Board {
         // make sure there is no square with multiple pieces on it
         for x in ALL_PIECES.iter() {
             for y in ALL_PIECES.iter() {
-                if *x != *y {
-                    if self.pieces(*x) & self.pieces(*y) != EMPTY {
-                        return false;
-                    }
+                if *x != *y && self.pieces(*x) & self.pieces(*y) != EMPTY {
+                    return false;
                 }
             }
         }
@@ -668,12 +792,11 @@ impl Board {
             }
             // if we have castle rights, make sure we have a king on the (E, {1,8}) square,
             // depending on the color
-            if castle_rights != CastleRights::NoRights {
-                if self.pieces(Piece::King) & self.color_combined(*color)
+            if castle_rights != CastleRights::NoRights
+                && self.pieces(Piece::King) & self.color_combined(*color)
                     != get_file(File::E) & get_rank(color.to_my_backrank())
-                {
-                    return false;
-                }
+            {
+                return false;
             }
         }
 
@@ -683,7 +806,7 @@ impl Board {
         }
 
         // it checks out
-        return true;
+        true
     }
 
     /// Get a hash of the board.
@@ -696,11 +819,11 @@ impl Board {
                 0
             }
             ^ Zobrist::castles(
-                self.castle_rights[self.side_to_move.to_index()],
+                self.castle_rights[self.side_to_move.into_index()],
                 self.side_to_move,
             )
             ^ Zobrist::castles(
-                self.castle_rights[(!self.side_to_move).to_index()],
+                self.castle_rights[(!self.side_to_move).into_index()],
                 !self.side_to_move,
             )
             ^ if self.side_to_move == Color::Black {
@@ -714,7 +837,8 @@ impl Board {
     ///
     /// Currently not implemented...
     #[inline]
-    pub fn get_pawn_hash(&self) -> u64 {
+    // Todo Implement
+    pub const fn get_pawn_hash(&self) -> u64 {
         0
     }
 
@@ -739,7 +863,7 @@ impl Board {
     }
 
     /// Get the piece on a particular `Square`, defaults to Piece::King after a full search of if/else tree.
-    /// 
+    ///
     /// ```
     /// use chess::{Board, Piece, Square};
     ///
@@ -770,24 +894,22 @@ impl Board {
             } else {
                 Piece::Bishop
             }
+        } else if self.pieces(Piece::Rook) & opp != EMPTY {
+            Piece::Rook
+        } else if self.pieces(Piece::Queen) & opp != EMPTY {
+            Piece::Queen
         } else {
-            if self.pieces(Piece::Rook) & opp != EMPTY {
-                Piece::Rook
-            } else if self.pieces(Piece::Queen) & opp != EMPTY {
-                Piece::Queen
-            } else {
-                Piece::King
-            }
+            Piece::King
         }
     }
 
     /// What color piece is on a particular square?
-    /// 
+    ///
     /// ```
     /// use chess::{Board, Square, Color};
-    /// 
+    ///
     /// let board = Board::default();
-    /// 
+    ///
     /// assert_eq!(board.color_on(Square::A1), Some(Color::White));
     /// assert_eq!(board.color_on(Square::A3), None);
     /// ```
@@ -836,7 +958,7 @@ impl Board {
     /// assert_eq!(board.en_passant(), Some(Square::E5));
     /// ```
     #[inline]
-    pub fn en_passant(&self) -> Option<Square> {
+    pub const fn en_passant(&self) -> Option<Square> {
         self.en_passant
     }
 
@@ -909,7 +1031,7 @@ impl Board {
     /// ```
     #[inline]
     pub fn legal(&self, m: ChessMove) -> bool {
-        MoveGen::new_legal(&self).find(|x| *x == m).is_some()
+        MoveGen::new_legal(&self).any(|x| x == m)
     }
 
     /// Make a chess move onto a new board.
@@ -1034,7 +1156,7 @@ impl Board {
             }
         } else if castles {
             let my_backrank = self.side_to_move.to_my_backrank();
-            let index = dest.get_file().to_index();
+            let index = dest.get_file().into_index();
             let start = BitBoard::set(my_backrank, unsafe {
                 *CASTLE_ROOK_START.get_unchecked(index)
             });
@@ -1115,7 +1237,7 @@ impl fmt::Display for Board {
 }
 
 impl TryFrom<&BoardBuilder> for Board {
-    type Error = Error;
+    type Error = InvalidError;
 
     fn try_from(fen: &BoardBuilder) -> Result<Self, Self::Error> {
         let mut board = Board::new();
@@ -1144,13 +1266,13 @@ impl TryFrom<&BoardBuilder> for Board {
         if board.is_sane() {
             Ok(board)
         } else {
-            Err(Error::InvalidBoard)
+            Err(InvalidError::Board)
         }
     }
 }
 
 impl TryFrom<&mut BoardBuilder> for Board {
-    type Error = Error;
+    type Error = InvalidError;
 
     fn try_from(fen: &mut BoardBuilder) -> Result<Self, Self::Error> {
         (&*fen).try_into()
@@ -1158,7 +1280,7 @@ impl TryFrom<&mut BoardBuilder> for Board {
 }
 
 impl TryFrom<BoardBuilder> for Board {
-    type Error = Error;
+    type Error = InvalidError;
 
     fn try_from(fen: BoardBuilder) -> Result<Self, Self::Error> {
         (&fen).try_into()
@@ -1166,7 +1288,7 @@ impl TryFrom<BoardBuilder> for Board {
 }
 
 impl FromStr for Board {
-    type Err = Error;
+    type Err = InvalidError;
 
     fn from_str(value: &str) -> Result<Self, Self::Err> {
         Ok(BoardBuilder::from_str(value)?.try_into()?)
@@ -1180,4 +1302,12 @@ fn test_null_move_en_passant() {
     let expected =
         Board::from_str("rnbqkbnr/pppp2pp/8/4pP2/8/8/PPPP1PPP/RNBQKBNR b KQkq - 0 0").unwrap();
     assert_eq!(start.null_move().unwrap(), expected);
+}
+
+#[test]
+fn check_startpos_correct() {
+    let startpos_fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+    let board = Board::from_str(startpos_fen).unwrap();
+    let startpos = Board::STARTPOS;
+    assert_eq!(board, startpos, "Startpos is not correct");
 }

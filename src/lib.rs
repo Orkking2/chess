@@ -28,7 +28,9 @@ pub use crate::board::*;
 mod bitboard;
 pub use crate::bitboard::{BitBoard, EMPTY};
 
+#[cfg(feature="std")]
 mod cache_table;
+#[cfg(feature="std")]
 pub use crate::cache_table::*;
 
 mod castle_rights;
@@ -79,4 +81,4 @@ mod board_builder;
 pub use crate::board_builder::BoardBuilder;
 
 mod error;
-pub use crate::error::Error;
+pub use crate::error::InvalidError;

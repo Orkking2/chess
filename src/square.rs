@@ -1,5 +1,5 @@
 use crate::color::Color;
-use crate::error::Error;
+use crate::error::InvalidError;
 use crate::file::File;
 use crate::rank::Rank;
 use std::fmt;
@@ -42,7 +42,7 @@ impl Square {
     /// assert_eq!(Square::default(), bad_sq);
     /// ```
     #[inline]
-    pub fn new(sq: u8) -> Square {
+    pub const fn new(sq: u8) -> Square {
         Square(sq & 63)
     }
 
@@ -64,7 +64,7 @@ impl Square {
     /// }
     /// ```
     #[inline]
-    pub fn make_square(rank: Rank, file: File) -> Square {
+    pub const fn make_square(rank: Rank, file: File) -> Square {
         Square((rank as u8) << 3 ^ (file as u8))
     }
 
@@ -78,7 +78,7 @@ impl Square {
     /// assert_eq!(sq.get_rank(), Rank::Seventh);
     /// ```
     #[inline]
-    pub fn get_rank(&self) -> Rank {
+    pub const fn get_rank(&self) -> Rank {
         Rank::from_index((self.0 >> 3) as usize)
     }
 
@@ -92,7 +92,7 @@ impl Square {
     /// assert_eq!(sq.get_file(), File::D);
     /// ```
     #[inline]
-    pub fn get_file(&self) -> File {
+    pub const fn get_file(&self) -> File {
         File::from_index((self.0 & 7) as usize)
     }
 
@@ -234,7 +234,7 @@ impl Square {
     /// assert_eq!(sq.uup().uup(), Square::make_square(Rank::First, File::D));
     /// ```
     #[inline]
-    pub fn uup(&self) -> Square {
+    pub const fn uup(&self) -> Square {
         Square::make_square(self.get_rank().up(), self.get_file())
     }
 
@@ -250,7 +250,7 @@ impl Square {
     /// assert_eq!(sq.udown().udown(), Square::make_square(Rank::Eighth, File::D));
     /// ```
     #[inline]
-    pub fn udown(&self) -> Square {
+    pub const fn udown(&self) -> Square {
         Square::make_square(self.get_rank().down(), self.get_file())
     }
 
@@ -266,7 +266,7 @@ impl Square {
     /// assert_eq!(sq.uleft().uleft(), Square::make_square(Rank::Seventh, File::H));
     /// ```
     #[inline]
-    pub fn uleft(&self) -> Square {
+    pub const fn uleft(&self) -> Square {
         Square::make_square(self.get_rank(), self.get_file().left())
     }
 
@@ -304,7 +304,7 @@ impl Square {
     /// assert_eq!(sq.uforward(Color::Black).uforward(Color::Black), Square::make_square(Rank::Eighth, File::D));
     /// ```
     #[inline]
-    pub fn uforward(&self, color: Color) -> Square {
+    pub const fn uforward(&self, color: Color) -> Square {
         match color {
             Color::White => self.uup(),
             Color::Black => self.udown(),
@@ -328,7 +328,7 @@ impl Square {
     /// assert_eq!(sq.ubackward(Color::White).ubackward(Color::White), Square::make_square(Rank::Eighth, File::D));
     /// ```
     #[inline]
-    pub fn ubackward(&self, color: Color) -> Square {
+    pub const fn ubackward(&self, color: Color) -> Square {
         match color {
             Color::White => self.udown(),
             Color::Black => self.uup(),
@@ -346,7 +346,7 @@ impl Square {
     /// assert_eq!(Square::make_square(Rank::Eighth, File::H).to_int(), 63);
     /// ```
     #[inline]
-    pub fn to_int(&self) -> u8 {
+    pub const fn to_int(&self) -> u8 {
         self.0
     }
 
@@ -355,13 +355,13 @@ impl Square {
     /// ```
     /// use chess::{Square, Rank, File};
     ///
-    /// assert_eq!(Square::make_square(Rank::First, File::A).to_index(), 0);
-    /// assert_eq!(Square::make_square(Rank::Second, File::A).to_index(), 8);
-    /// assert_eq!(Square::make_square(Rank::First, File::B).to_index(), 1);
-    /// assert_eq!(Square::make_square(Rank::Eighth, File::H).to_index(), 63);
+    /// assert_eq!(Square::make_square(Rank::First, File::A).into_index(), 0);
+    /// assert_eq!(Square::make_square(Rank::Second, File::A).into_index(), 8);
+    /// assert_eq!(Square::make_square(Rank::First, File::B).into_index(), 1);
+    /// assert_eq!(Square::make_square(Rank::Eighth, File::H).into_index(), 63);
     /// ```
     #[inline]
-    pub fn to_index(&self) -> usize {
+    pub const fn into_index(self) -> usize {
         self.0 as usize
     }
 
@@ -965,18 +965,18 @@ impl fmt::Display for Square {
         write!(
             f,
             "{}{}",
-            (('a' as u8) + ((self.0 & 7) as u8)) as char,
-            (('1' as u8) + ((self.0 >> 3) as u8)) as char
+            (b'a' + ((self.0 & 7) as u8)) as char,
+            (b'1' + ((self.0 >> 3) as u8)) as char
         )
     }
 }
 
 impl FromStr for Square {
-    type Err = Error;
+    type Err = InvalidError;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         if s.len() < 2 {
-            return Err(Error::InvalidSquare);
+            return Err(InvalidError::Square);
         }
 
         let mut i = s.chars();
@@ -984,13 +984,13 @@ impl FromStr for Square {
             match c1 {
                 'a' | 'b' | 'c' | 'd' | 'e' | 'f' | 'g' | 'h' => {}
                 _ => {
-                    return Err(Error::InvalidSquare);
+                    return Err(InvalidError::Square);
                 }
             }
             match c2 {
                 '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' => {}
                 _ => {
-                    return Err(Error::InvalidSquare);
+                    return Err(InvalidError::Square);
                 }
             }
             Ok(Square::make_square(
@@ -998,7 +998,7 @@ impl FromStr for Square {
                 File::from_index((c2 as usize) - ('a' as usize)),
             ))
         } else {
-            Err(Error::InvalidSquare)
+            Err(InvalidError::Square)
         }
     }
 }

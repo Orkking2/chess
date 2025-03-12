@@ -2,52 +2,45 @@ use std::fmt;
 
 /// Sometimes, bad stuff happens.
 #[derive(Clone, Debug)]
-#[cfg(feature = "std")]
-pub enum Error {
+pub enum InvalidError {
     /// The FEN string is invalid
-    InvalidFen { fen: String },
+    #[cfg(feature = "std")]
+    FEN { fen: String },
+    #[cfg(not(feature = "std"))]
+    FEN,
 
     /// The board created from BoardBuilder was found to be invalid
-    InvalidBoard,
+    Board,
 
     /// An attempt was made to create a square from an invalid string
-    InvalidSquare,
+    Square,
 
     /// An attempt was made to create a move from an invalid SAN string
-    InvalidSanMove,
+    SanMove,
 
     /// An atempt was made to create a move from an invalid UCI string
-    InvalidUciMove,
+    UciMove,
 
     /// An attempt was made to convert a string not equal to "1"-"8" to a rank
-    InvalidRank,
+    Rank,
 
     /// An attempt was made to convert a string not equal to "a"-"h" to a file
-    InvalidFile,
+    File,
 }
 
-impl fmt::Display for Error {
+impl fmt::Display for InvalidError {
     fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         match self {
-            Self::InvalidFen{ fen: s } => write!(f, "Invalid FEN string: {}", s),
-            Self::InvalidBoard => write!(f, "The board specified did not pass sanity checks.  Are you sure the kings exist and the side to move cannot capture the opposing king?"),
-            Self::InvalidSquare => write!(f, "The string specified does not contain a valid algebraic notation square."),
-            Self::InvalidSanMove => write!(f, "The string specified does not contain a valid SAN notation move"),
-            Self::InvalidUciMove => write!(f, "The string specified does not contain a valid UCI notation move"),
-            Self::InvalidRank => write!(f, "The string specified does not contain a valid rank."),
-            Self::InvalidFile => write!(f, "The string specified does not contain a valid file.")
+            #[cfg(feature="std")]
+            Self::FEN{ fen: s } => write!(f, "Invalid FEN string: {}", s),
+            #[cfg(not(feature="std"))]
+            Self::FEN => write!(f, "Invalid FEN string."),
+            Self::Board => write!(f, "The board specified did not pass sanity checks.  Are you sure the kings exist and the side to move cannot capture the opposing king?"),
+            Self::Square => write!(f, "The string specified does not contain a valid algebraic notation square."),
+            Self::SanMove => write!(f, "The string specified does not contain a valid SAN notation move"),
+            Self::UciMove => write!(f, "The string specified does not contain a valid UCI notation move"),
+            Self::Rank => write!(f, "The string specified does not contain a valid rank."),
+            Self::File => write!(f, "The string specified does not contain a valid file.")
         }
     }
-}
-
-#[derive(Clone, Debug)]
-#[cfg(not(feature = "std"))]
-pub enum Error {
-    InvalidFen,
-    InvalidBoard,
-    InvalidSquare,
-    InvalidSanMove,
-    InvalidUciMove,
-    InvalidRank,
-    InvalidFile,
 }
