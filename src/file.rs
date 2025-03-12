@@ -3,6 +3,7 @@ use std::str::FromStr;
 
 /// Describe a file (column) on a chess board
 #[repr(u8)]
+#[cfg_attr(feature="serde", derive(serde::Serialize, serde::Deserialize))]
 #[derive(Copy, Clone, PartialEq, Eq, PartialOrd, Debug, Hash)]
 pub enum File {
     A = 0,

@@ -3,6 +3,7 @@ use std::fmt;
 
 /// Represent a chess piece as a very simple enum
 #[repr(u8)]
+#[cfg_attr(feature="serde", derive(serde::Serialize, serde::Deserialize))]
 #[derive(PartialEq, Eq, Ord, PartialOrd, Copy, Clone, Debug, Hash)]
 pub enum Piece {
     Pawn,
@@ -95,7 +96,7 @@ impl fmt::Display for PieceWithColor {
         write!(
             f,
             "{}",
-            if (&self.color).into() {
+            if self.color.into() {
                 self.piece.to_char().to_ascii_uppercase()
             } else {
                 self.piece.to_char()

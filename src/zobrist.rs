@@ -42,7 +42,11 @@ impl Zobrist {
     }
 
     #[inline]
-    pub fn color() -> u64 {
-        SIDE_TO_MOVE
+    pub fn color(color: Color) -> u64 {
+        if (!color).into() {
+            SIDE_TO_MOVE
+        } else {
+            0
+        }
     }
 }

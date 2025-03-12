@@ -17,6 +17,7 @@ rust-version = "1.56.0"
 [dependencies]
 arrayvec = { version = "0.7.2", default-features = false }
 nodrop = { version = "0.1.14", default-features = false }
+serde = { version = "1.0.219", default-features = false, optional = true, features = ["derive"] }
 
 [profile.release]
 opt-level = 3
@@ -40,7 +41,9 @@ opt-level = 3
 
 [build-dependencies]
 rand = { version = "0.7.2", default-features = false, features = ["small_rng"] }
+serde = { version = "1.0.219", defaulte-features = false, optional = true, features = ["derive"] }
 
 [features]
 default = ["std"]
 std = []
+serde = ["dep:serde"]

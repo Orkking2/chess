@@ -13,6 +13,7 @@ use std::fmt;
 use std::str::FromStr;
 
 /// Represent a ChessMove in memory
+#[cfg_attr(feature="serde", derive(serde::Serialize, serde::Deserialize))]
 #[derive(Clone, Copy, Eq, PartialEq, Default, Debug, Hash)]
 pub struct ChessMove {
     source: Square,

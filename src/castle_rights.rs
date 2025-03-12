@@ -10,6 +10,7 @@ use crate::magic::{KINGSIDE_CASTLE_SQUARES, QUEENSIDE_CASTLE_SQUARES};
 
 /// What castle rights does a particular player have?
 #[repr(u8)]
+#[cfg_attr(feature="serde", derive(serde::Serialize, serde::Deserialize))]
 #[derive(Copy, Clone, PartialEq, Eq, PartialOrd, Debug, Hash)]
 pub enum CastleRights {
     NoRights = 0b00,

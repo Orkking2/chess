@@ -7,6 +7,7 @@ use crate::piece::Piece;
 use std::str::FromStr;
 
 /// Contains all actions supported within the game
+#[cfg_attr(feature="serde", derive(serde::Serialize, serde::Deserialize))]
 #[derive(Copy, Clone, PartialEq, PartialOrd, Debug, Eq)]
 pub enum Action {
     MakeMove(ChessMove),
@@ -17,6 +18,7 @@ pub enum Action {
 }
 
 /// What was the result of this game?
+#[cfg_attr(feature="serde", derive(serde::Serialize, serde::Deserialize))]
 #[derive(Copy, Clone, PartialEq, PartialOrd, Eq, Ord, Debug, Hash)]
 pub enum GameResult {
     WhiteCheckmates,

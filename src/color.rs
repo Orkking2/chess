@@ -3,6 +3,7 @@ use std::ops::Not;
 
 /// Represent a color.
 #[repr(u8)]
+#[cfg_attr(feature="serde", derive(serde::Serialize, serde::Deserialize))]
 #[derive(PartialOrd, PartialEq, Eq, Copy, Clone, Debug, Hash)]
 pub enum Color {
     White = 0,
@@ -84,11 +85,11 @@ impl Not for Color {
     }
 }
 
-impl From<&Color> for bool {
+impl From<Color> for bool {
     /// While in the backend, `Color::White == 0` and `Color::Black == 1`, 
     /// it is more intuitive for `Color::White` to evaluate `true`, as it goes first
     #[inline]
-    fn from(value: &Color) -> Self {
+    fn from(value: Color) -> Self {
         match value {
             Color::White => true,
             Color::Black => false,

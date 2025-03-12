@@ -20,6 +20,7 @@ use std::hash::{Hash, Hasher};
 use std::str::FromStr;
 
 /// A representation of a chess board.  That's why you're here, right?
+#[cfg_attr(feature="serde", derive(serde::Serialize, serde::Deserialize))]
 #[derive(Copy, Clone, PartialEq, Eq, Debug)]
 pub struct Board {
     pieces: [BitBoard; NUM_PIECES],
@@ -35,6 +36,7 @@ pub struct Board {
 
 /// What is the status of this game?
 #[repr(u8)]
+#[cfg_attr(feature="serde", derive(serde::Serialize, serde::Deserialize))]
 #[derive(Copy, Clone, PartialEq, Debug)]
 pub enum BoardStatus {
     Ongoing,
@@ -826,20 +828,18 @@ impl Board {
                 self.castle_rights[(!self.side_to_move).into_index()],
                 !self.side_to_move,
             )
-            ^ if self.side_to_move == Color::Black {
-                Zobrist::color()
-            } else {
-                0
-            }
+            ^ Zobrist::color(self.side_to_move)
     }
 
     /// Get a pawn hash of the board (a hash that only changes on color change and pawn moves).
-    ///
-    /// Currently not implemented...
     #[inline]
-    // Todo Implement
-    pub const fn get_pawn_hash(&self) -> u64 {
-        0
+    pub fn get_pawn_hash(&self) -> u64 {
+        self.pieces(Piece::Pawn)
+            .into_iter()
+            .map(|square| (square, self.color_on(square).unwrap()))
+            .fold(Zobrist::color(self.side_to_move), |acc, (pawn_square, color)| {
+                acc ^ Zobrist::piece(Piece::Pawn, pawn_square, color)
+            })
     }
 
     /// What piece is on a particular `Square`?  Is there even one?

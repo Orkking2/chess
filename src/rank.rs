@@ -2,8 +2,9 @@ use crate::error::InvalidError;
 use std::str::FromStr;
 
 /// Describe a rank (row) on a chess board
-#[derive(Copy, Clone, PartialEq, Eq, PartialOrd, Debug, Hash)]
 #[repr(u8)]
+#[cfg_attr(feature="serde", derive(serde::Serialize, serde::Deserialize))]
+#[derive(Copy, Clone, PartialEq, Eq, PartialOrd, Debug, Hash)]
 pub enum Rank {
     First = 0,
     Second = 1,
