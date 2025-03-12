@@ -507,6 +507,7 @@ use crate::bitboard::BitBoard;
 #[cfg(test)]
 use std::convert::TryInto;
 
+#[cfg(feature="std")]
 #[test]
 fn check_initial_position() {
     let initial_fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
