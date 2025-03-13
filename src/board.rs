@@ -428,7 +428,6 @@ impl Board {
         }
     }
 
-    // Todo Rewrite -- This doctest uses deprecated functions.
     /// Remove castle rights for a particular side.
     ///
     /// ```
