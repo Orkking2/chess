@@ -6,9 +6,9 @@ use crate::movegen::piece_type::*;
 use crate::piece::{Piece, NUM_PROMOTION_PIECES, PROMOTION_PIECES};
 use crate::square::Square;
 use arrayvec::ArrayVec;
-use nodrop::NoDrop;
 use std::iter::ExactSizeIterator;
 
+#[cfg_attr(feature="serde", derive(serde::Serialize, serde::Deserialize))]
 #[derive(Copy, Clone, PartialEq, PartialOrd)]
 pub struct SquareAndBitBoard {
     square: Square,
@@ -26,7 +26,7 @@ impl SquareAndBitBoard {
     }
 }
 
-pub type MoveList = NoDrop<ArrayVec<SquareAndBitBoard, 18>>;
+pub type MoveList = ArrayVec<SquareAndBitBoard, 18>;
 
 /// An incremental move generator
 ///
@@ -80,6 +80,7 @@ pub type MoveList = NoDrop<ArrayVec<SquareAndBitBoard, 18>>;
 /// assert_eq!(count, 20);
 ///
 /// ```
+#[cfg_attr(feature="serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct MoveGen {
     moves: MoveList,
     promotion_index: usize,
@@ -92,7 +93,7 @@ impl MoveGen {
     fn enumerate_moves(board: &Board) -> MoveList {
         let checkers = *board.checkers();
         let unoccupied_by_me = !board.color_combined(board.side_to_move());
-        let mut movelist = NoDrop::new(ArrayVec::<SquareAndBitBoard, 18>::new());
+        let mut movelist = ArrayVec::<SquareAndBitBoard, 18>::new();
 
         if checkers == EMPTY {
             PawnType::legals::<NotInCheckType>(&mut movelist, board, unoccupied_by_me);
