@@ -20,7 +20,7 @@ use std::hash::{Hash, Hasher};
 use std::str::FromStr;
 
 /// A representation of a chess board.  That's why you're here, right?
-#[cfg_attr(feature="serde", derive(serde::Serialize, serde::Deserialize))]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 #[derive(Copy, Clone, PartialEq, Eq, Debug)]
 pub struct Board {
     pieces: [BitBoard; NUM_PIECES],
@@ -36,7 +36,7 @@ pub struct Board {
 
 /// What is the status of this game?
 #[repr(u8)]
-#[cfg_attr(feature="serde", derive(serde::Serialize, serde::Deserialize))]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 #[derive(Copy, Clone, PartialEq, Debug)]
 pub enum BoardStatus {
     Ongoing,
@@ -246,6 +246,8 @@ impl Board {
     }
 
     /// Is this game Ongoing, is it Stalemate, or is it Checkmate?
+    /// 
+    /// Note: This function is optimized to only find the first possible move to minimize time cost.
     ///
     /// ```
     /// use chess::{Board, BoardStatus, Square, ChessMove};
@@ -285,18 +287,15 @@ impl Board {
     /// assert_eq!(board.status(), BoardStatus::Checkmate);
     /// ```
     #[inline]
-    // Todo Optimize -- This function should not generate every legal move, it should generate only a single one.
     pub fn status(&self) -> BoardStatus {
-        let moves = MoveGen::new_legal(self).len();
-        match moves {
-            0 => {
-                if self.checkers == EMPTY {
-                    BoardStatus::Stalemate
-                } else {
-                    BoardStatus::Checkmate
-                }
+        if !MoveGen::has_legals(self) {
+            if self.checkers == EMPTY {
+                BoardStatus::Stalemate
+            } else {
+                BoardStatus::Checkmate
             }
-            _ => BoardStatus::Ongoing,
+        } else {
+            BoardStatus::Ongoing
         }
     }
 
@@ -836,9 +835,10 @@ impl Board {
         self.pieces(Piece::Pawn)
             .into_iter()
             .map(|square| (square, self.color_on(square).unwrap()))
-            .fold(Zobrist::color(self.side_to_move), |acc, (pawn_square, color)| {
-                acc ^ Zobrist::piece(Piece::Pawn, pawn_square, color)
-            })
+            .fold(
+                Zobrist::color(self.side_to_move),
+                |acc, (pawn_square, color)| acc ^ Zobrist::piece(Piece::Pawn, pawn_square, color),
+            )
     }
 
     /// What piece is on a particular `Square`?  Is there even one?
