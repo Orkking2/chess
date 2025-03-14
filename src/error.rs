@@ -29,7 +29,7 @@ pub enum InvalidError {
 }
 
 impl fmt::Display for InvalidError {
-    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
             #[cfg(feature="std")]
             Self::FEN{ fen: s } => write!(f, "Invalid FEN string: {}", s),
