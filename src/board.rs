@@ -246,44 +246,28 @@ impl Board {
     }
 
     /// Is this game Ongoing, is it Stalemate, or is it Checkmate?
-    /// 
+    ///
     /// Note: This function is optimized to only find the first possible move to minimize time cost.
     ///
     /// ```
     /// use chess::{Board, BoardStatus, Square, ChessMove};
     ///
     /// let mut board = Board::default();
-    ///
     /// assert_eq!(board.status(), BoardStatus::Ongoing);
     ///
-    /// board = board.make_move_new(ChessMove::new(Square::E2,
-    ///                                            Square::E4,
-    ///                                            None));
-    ///
+    /// board = board.make_move_new(ChessMove::new(Square::E2, Square::E4, None));
     /// assert_eq!(board.status(), BoardStatus::Ongoing);
     ///
-    /// board = board.make_move_new(ChessMove::new(Square::F7,
-    ///                                            Square::F6,
-    ///                                            None));
-    ///
+    /// board = board.make_move_new(ChessMove::new(Square::F7, Square::F6, None));
     /// assert_eq!(board.status(), BoardStatus::Ongoing);
     ///
-    /// board = board.make_move_new(ChessMove::new(Square::D2,
-    ///                                            Square::D4,
-    ///                                            None));
-    ///
+    /// board = board.make_move_new(ChessMove::new(Square::D2, Square::D4, None));
     /// assert_eq!(board.status(), BoardStatus::Ongoing);
     ///
-    /// board = board.make_move_new(ChessMove::new(Square::G7,
-    ///                                            Square::G5,
-    ///                                            None));
-    ///
+    /// board = board.make_move_new(ChessMove::new(Square::G7, Square::G5, None));
     /// assert_eq!(board.status(), BoardStatus::Ongoing);
     ///
-    /// board = board.make_move_new(ChessMove::new(Square::D1,
-    ///                                            Square::H5,
-    ///                                            None));
-    ///
+    /// board = board.make_move_new(ChessMove::new(Square::D1, Square::H5, None));
     /// assert_eq!(board.status(), BoardStatus::Checkmate);
     /// ```
     #[inline]
@@ -380,31 +364,20 @@ impl Board {
     /// ```
     /// use chess::{Board, Square, CastleRights, Color, ChessMove};
     ///
-    /// let move1 = ChessMove::new(Square::A2,
-    ///                            Square::A4,
-    ///                            None);
-    ///
-    /// let move2 = ChessMove::new(Square::E7,
-    ///                            Square::E5,
-    ///                            None);
-    ///
-    /// let move3 = ChessMove::new(Square::A1,
-    ///                            Square::A2,
-    ///                            None);
-    ///
-    /// let move4 = ChessMove::new(Square::E8,
-    ///                            Square::E7,
-    ///                            None);
+    /// let m1 = ChessMove::new(Square::A2, Square::A4, None);
+    /// let m2 = ChessMove::new(Square::E7, Square::E5, None);
+    /// let m3 = ChessMove::new(Square::A1, Square::A2, None);
+    /// let m4 = ChessMove::new(Square::E8, Square::E7, None);
     ///
     /// let mut board = Board::default();
     ///
     /// assert_eq!(board.castle_rights(Color::White), CastleRights::Both);
     /// assert_eq!(board.castle_rights(Color::Black), CastleRights::Both);
     ///
-    /// board = board.make_move_new(move1)
-    ///              .make_move_new(move2)
-    ///              .make_move_new(move3)
-    ///              .make_move_new(move4);
+    /// board = board.make_move_new(m1)
+    ///              .make_move_new(m2)
+    ///              .make_move_new(m3)
+    ///              .make_move_new(m4);
     ///
     /// assert_eq!(board.castle_rights(Color::White), CastleRights::KingSide);
     /// assert_eq!(board.castle_rights(Color::Black), CastleRights::NoRights);
@@ -582,9 +555,7 @@ impl Board {
     ///
     /// let board = Board::default();
     ///
-    /// let new_board = board.set_piece(Piece::Queen,
-    ///                                 Color::White,
-    ///                                 Square::E4)
+    /// let new_board = board.set_piece(Piece::Queen, Color::White, Square::E4)
     ///                      .expect("Valid Position");
     ///
     /// assert_eq!(new_board.pieces(Piece::Queen).count(), 3);
@@ -933,26 +904,15 @@ impl Board {
     /// ```
     /// use chess::{Board, ChessMove, Square};
     ///
-    /// let move1 = ChessMove::new(Square::D2,
-    ///                            Square::D4,
-    ///                            None);
+    /// let m1 = ChessMove::new(Square::D2, Square::D4, None);
+    /// let m2 = ChessMove::new(Square::H7, Square::H5, None);
+    /// let m3 = ChessMove::new(Square::D4, Square::D5, None);
+    /// let m4 = ChessMove::new(Square::E7, Square::E5, None);
     ///
-    /// let move2 = ChessMove::new(Square::H7,
-    ///                            Square::H5,
-    ///                            None);
-    ///
-    /// let move3 = ChessMove::new(Square::D4,
-    ///                            Square::D5,
-    ///                            None);
-    ///
-    /// let move4 = ChessMove::new(Square::E7,
-    ///                            Square::E5,
-    ///                            None);
-    ///
-    /// let board = Board::default().make_move_new(move1)
-    ///                             .make_move_new(move2)
-    ///                             .make_move_new(move3)
-    ///                             .make_move_new(move4);
+    /// let board = Board::default().make_move_new(m1)
+    ///                             .make_move_new(m2)
+    ///                             .make_move_new(m3)
+    ///                             .make_move_new(m4);
     ///
     /// assert_eq!(board.en_passant(), Some(Square::E5));
     /// ```
@@ -966,26 +926,15 @@ impl Board {
     /// ```
     /// use chess::{Board, ChessMove, Square};
     ///
-    /// let move1 = ChessMove::new(Square::D2,
-    ///                            Square::D4,
-    ///                            None);
+    /// let m1 = ChessMove::new(Square::D2, Square::D4, None);
+    /// let m2 = ChessMove::new(Square::H7, Square::H5, None);
+    /// let m3 = ChessMove::new(Square::D4, Square::D5, None);
+    /// let m4 = ChessMove::new(Square::E7, Square::E5, None);
     ///
-    /// let move2 = ChessMove::new(Square::H7,
-    ///                            Square::H5,
-    ///                            None);
-    ///
-    /// let move3 = ChessMove::new(Square::D4,
-    ///                            Square::D5,
-    ///                            None);
-    ///
-    /// let move4 = ChessMove::new(Square::E7,
-    ///                            Square::E5,
-    ///                            None);
-    ///
-    /// let board = Board::default().make_move_new(move1)
-    ///                             .make_move_new(move2)
-    ///                             .make_move_new(move3)
-    ///                             .make_move_new(move4);
+    /// let board = Board::default().make_move_new(m1)
+    ///                             .make_move_new(m2)
+    ///                             .make_move_new(m3)
+    ///                             .make_move_new(m4);
     ///
     /// assert_eq!(board.en_passant_target(), Some(Square::E6));
     /// ```
@@ -1015,18 +964,13 @@ impl Board {
     /// ```
     /// use chess::{Board, ChessMove, Square, MoveGen};
     ///
-    /// let move1 = ChessMove::new(Square::E2,
-    ///                            Square::E4,
-    ///                            None);
-    ///
-    /// let move2 = ChessMove::new(Square::E2,
-    ///                            Square::E5,
-    ///                            None);
+    /// let m1 = ChessMove::new(Square::E2, Square::E4, None);
+    /// let m2 = ChessMove::new(Square::E2, Square::E5, None);
     ///
     /// let board = Board::default();
     ///
-    /// assert_eq!(board.legal(move1), true);
-    /// assert_eq!(board.legal(move2), false);
+    /// assert_eq!(board.legal(m1), true);
+    /// assert_eq!(board.legal(m2), false);
     /// ```
     #[inline]
     pub fn legal(&self, m: ChessMove) -> bool {
@@ -1040,18 +984,39 @@ impl Board {
     /// ```
     /// use chess::{Board, ChessMove, Square, Color};
     ///
-    /// let m = ChessMove::new(Square::D2,
-    ///                        Square::D4,
-    ///                        None);
+    /// let m = ChessMove::new(Square::D2, Square::D4, None);
     ///
     /// let board = Board::default();
     /// assert_eq!(board.make_move_new(m).side_to_move(), Color::Black);
     /// ```
     #[inline]
     pub fn make_move_new(&self, m: ChessMove) -> Board {
-        let mut result = *self;
+        let mut result = Board::new();
         self.make_move(m, &mut result);
         result
+    }
+
+    /// Make a chess move on this board without creating a new one, returns `&mut Board` so you can chain operations.
+    ///
+    /// panic!() if king is captured.
+    ///
+    /// ```
+    /// use chess::{Board, ChessMove, Square, Color};
+    ///
+    /// let m1 = ChessMove::new(Square::D2, Square::D4, None);
+    /// let m2 = ChessMove::new(Square::E7, Square::E5, None);
+    ///
+    /// let mut board = Board::default();
+    /// 
+    /// board.make_move_mutref(m1).make_move_mutref(m2);
+    /// 
+    /// assert_eq!(board.side_to_move(), Color::White);
+    /// ```
+    pub fn make_move_mutref(&mut self, m: ChessMove) -> &mut Self {
+        let mut result = Board::new();
+        self.make_move(m, &mut result);
+        *self = result;
+        self
     }
 
     /// Make a chess move onto an already allocated `Board`.
