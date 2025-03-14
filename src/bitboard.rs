@@ -321,24 +321,6 @@ impl BitBoard {
     pub const fn to_size(&self, rightshift: u8) -> usize {
         (self.0 >> rightshift) as usize
     }
-
-    pub(crate) const fn from_array(arr: [u8; 8]) -> Self {
-        let mut accum = 0u64;
-
-        let mut i = 0;
-
-        loop {
-            accum |= arr[i] as u64;
-            i += 1;
-            if i == 8 {
-                break;
-            } else {
-                accum <<= 8;
-            }
-        }
-
-        BitBoard::new(accum)
-    }
 }
 
 /// For the `BitBoard`, iterate over every `Square` set.

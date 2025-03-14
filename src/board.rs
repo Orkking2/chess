@@ -18,6 +18,7 @@ use std::convert::{TryFrom, TryInto};
 use std::fmt;
 use std::hash::{Hash, Hasher};
 use std::str::FromStr;
+use std::sync::LazyLock;
 
 /// A representation of a chess board.  That's why you're here, right?
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
@@ -58,7 +59,7 @@ impl Default for Board {
     /// ```
     #[inline]
     fn default() -> Board {
-        Self::STARTPOS
+        *STARTPOS
     }
 }
 
@@ -68,123 +69,11 @@ impl Hash for Board {
     }
 }
 
+static STARTPOS: LazyLock<Board> = LazyLock::new(|| {
+    Board::from_str("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1").expect("Startpos FEN is valid FEN")
+});
+
 impl Board {
-    /// Represents the start position of a chess game.
-    /// ```text
-    /// ♜ ♞ ♝ ♛ ♚ ♝ ♞ ♜
-    /// ♟ ♟ ♟ ♟ ♟ ♟ ♟ ♟
-    /// . . . . . . . .
-    /// . . . . . . . .
-    /// . . . . . . . .
-    /// . . . . . . . .
-    /// ♙ ♙ ♙ ♙ ♙ ♙ ♙ ♙
-    /// ♖ ♘ ♗ ♕ ♔ ♗ ♘ ♖
-    /// ```
-    pub const STARTPOS: Self = {
-        const PAWN_BITBOARD: BitBoard = BitBoard::from_array([
-            0b0000_0000,
-            0b1111_1111,
-            0b0000_0000,
-            0b0000_0000,
-            0b0000_0000,
-            0b0000_0000,
-            0b1111_1111,
-            0b0000_0000,
-        ]);
-        const KNIGHT_BITBOARD: BitBoard = BitBoard::from_array([
-            0b0100_0010,
-            0b0000_0000,
-            0b0000_0000,
-            0b0000_0000,
-            0b0000_0000,
-            0b0000_0000,
-            0b0000_0000,
-            0b0100_0010,
-        ]);
-        const BISHOP_BITBOARD: BitBoard = BitBoard::from_array([
-            0b0010_0100,
-            0b0000_0000,
-            0b0000_0000,
-            0b0000_0000,
-            0b0000_0000,
-            0b0000_0000,
-            0b0000_0000,
-            0b0010_0100,
-        ]);
-        const ROOK_BITBOARD: BitBoard = BitBoard::from_array([
-            0b1000_0001,
-            0b0000_0000,
-            0b0000_0000,
-            0b0000_0000,
-            0b0000_0000,
-            0b0000_0000,
-            0b0000_0000,
-            0b1000_0001,
-        ]);
-        const QUEEN_BITBOARD: BitBoard = BitBoard::from_array([
-            0b0000_1000,
-            0b0000_0000,
-            0b0000_0000,
-            0b0000_0000,
-            0b0000_0000,
-            0b0000_0000,
-            0b0000_0000,
-            0b0000_1000,
-        ]);
-        const KING_BITBOARD: BitBoard = BitBoard::from_array([
-            0b0001_0000,
-            0b0000_0000,
-            0b0000_0000,
-            0b0000_0000,
-            0b0000_0000,
-            0b0000_0000,
-            0b0000_0000,
-            0b0001_0000,
-        ]);
-        const BLACK_BITBOARD: BitBoard = BitBoard::from_array([
-            0b1111_1111,
-            0b1111_1111,
-            0b0000_0000,
-            0b0000_0000,
-            0b0000_0000,
-            0b0000_0000,
-            0b0000_0000,
-            0b0000_0000,
-        ]);
-        const WHITE_BITBOARD: BitBoard = BitBoard::from_array([
-            0b0000_0000,
-            0b0000_0000,
-            0b0000_0000,
-            0b0000_0000,
-            0b0000_0000,
-            0b0000_0000,
-            0b1111_1111,
-            0b1111_1111,
-        ]);
-
-        const COMBINED_BITBOARD: BitBoard = BitBoard::new(BLACK_BITBOARD.0 | WHITE_BITBOARD.0);
-        const START_HASH: u64 = 11762218931632540;
-
-        Self {
-            pieces: [
-                PAWN_BITBOARD,
-                KNIGHT_BITBOARD,
-                BISHOP_BITBOARD,
-                ROOK_BITBOARD,
-                QUEEN_BITBOARD,
-                KING_BITBOARD,
-            ],
-            color_combined: [WHITE_BITBOARD, BLACK_BITBOARD],
-            combined: COMBINED_BITBOARD,
-            side_to_move: Color::White,
-            castle_rights: [CastleRights::Both; NUM_COLORS],
-            pinned: EMPTY,
-            checkers: EMPTY,
-            hash: START_HASH,
-            en_passant: None,
-        }
-    };
-
     /// Construct a new `Board` that is completely empty.
     /// Note: This does NOT give you the initial position.  Just a blank slate.
     const fn new() -> Board {
@@ -1001,16 +890,18 @@ impl Board {
     /// panic!() if king is captured.
     ///
     /// ```
-    /// use chess::{Board, ChessMove, Square, Color};
-    ///
-    /// let m1 = ChessMove::new(Square::D2, Square::D4, None);
-    /// let m2 = ChessMove::new(Square::E7, Square::E5, None);
+    /// use chess::{Board, ChessMove, Square, Color, BoardStatus};
     ///
     /// let mut board = Board::default();
     /// 
-    /// board.make_move_mutref(m1).make_move_mutref(m2);
+    /// board.make_move_mutref(ChessMove::new(Square::E2, Square::E4, None))
+    ///      .make_move_mutref(ChessMove::new(Square::F7, Square::F6, None))
+    ///      .make_move_mutref(ChessMove::new(Square::D2, Square::D4, None))
+    ///      .make_move_mutref(ChessMove::new(Square::G7, Square::G5, None))
+    ///      .make_move_mutref(ChessMove::new(Square::D1, Square::H5, None));
     /// 
-    /// assert_eq!(board.side_to_move(), Color::White);
+    /// 
+    /// assert_eq!(board.status(), BoardStatus::Checkmate);
     /// ```
     pub fn make_move_mutref(&mut self, m: ChessMove) -> &mut Self {
         let mut result = Board::new();
@@ -1272,6 +1163,6 @@ fn test_null_move_en_passant() {
 fn check_startpos_correct() {
     let startpos_fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
     let board = Board::from_str(startpos_fen).unwrap();
-    let startpos = Board::STARTPOS;
+    let startpos = *STARTPOS;
     assert_eq!(board, startpos, "Startpos is not correct");
 }
