@@ -76,6 +76,7 @@ static STARTPOS: LazyLock<Board> = LazyLock::new(|| {
 impl Board {
     /// Construct a new `Board` that is completely empty.
     /// Note: This does NOT give you the initial position.  Just a blank slate.
+    #[inline]
     const fn new() -> Board {
         Board {
             pieces: [EMPTY; NUM_PIECES],
