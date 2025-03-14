@@ -23,7 +23,7 @@ pub struct ChessMove {
 
 impl ChessMove {
     /// An invalid move, can make `Option<ChessMove>` more efficient. See `into_option`.
-    pub const NULL_MOVE: ChessMove = ChessMove {
+    pub const NULL_MOVE: Self = Self {
         source: Square::A1,
         dest: Square::A1,
         promotion: None,
@@ -39,7 +39,7 @@ impl ChessMove {
     ///
     /// Call `.from_option` to compress back into a `ChessMove`.
     #[inline]
-    pub fn into_option(self) -> Option<ChessMove> {
+    pub fn into_option(self) -> Option<Self> {
         if self.is_null_move() {
             None
         } else {
@@ -51,7 +51,7 @@ impl ChessMove {
     ///
     /// Call `.into_option` to expand back into an `Option<ChessMove>`.
     #[inline]
-    pub const fn from_option(value: Option<Self>) -> ChessMove {
+    pub const fn from_option(value: Option<Self>) -> Self {
         if let Some(mov) = value {
             mov
         } else {
@@ -62,8 +62,8 @@ impl ChessMove {
     /// Create a new chess move, given a source `Square`, a destination `Square`, and an optional
     /// promotion `Piece`
     #[inline]
-    pub const fn new(source: Square, dest: Square, promotion: Option<Piece>) -> ChessMove {
-        ChessMove {
+    pub const fn new(source: Square, dest: Square, promotion: Option<Piece>) -> Self {
+        Self {
             source,
             dest,
             promotion,
@@ -98,14 +98,14 @@ impl ChessMove {
     ///     ChessMove::new(Square::E2, Square::E4, None)
     /// );
     /// ```
-    pub fn from_san(board: &Board, move_text: &str) -> Result<ChessMove, InvalidError> {
+    pub fn from_san(board: &Board, move_text: &str) -> Result<Self, InvalidError> {
         // Castles first...
         if move_text == "O-O" || move_text == "O-O-O" {
             let rank = board.side_to_move().to_my_backrank();
             let source_file = File::E;
             let dest_file = if move_text == "O-O" { File::G } else { File::C };
 
-            let m = ChessMove::new(
+            let m = Self::new(
                 Square::make_square(rank, source_file),
                 Square::make_square(rank, dest_file),
                 None,
@@ -356,7 +356,7 @@ impl ChessMove {
         // moving_piece, source_rank, source_file, taks, dest, promotion, maybe_check_or_mate, and
         // ep
 
-        let mut found_move: Option<ChessMove> = None;
+        let mut found_move: Option<Self> = None;
         for m in &mut MoveGen::new_legal(board) {
             // check that the move has the properties specified
             if board.piece_on(m.get_source()) != Some(moving_piece) {
@@ -458,7 +458,7 @@ impl fmt::Display for ChessMove {
 //? Why does this exist?
 //? What does it even mean for a move to be "less" than another?
 impl Ord for ChessMove {
-    fn cmp(&self, other: &ChessMove) -> Ordering {
+    fn cmp(&self, other: &Self) -> Ordering {
         if self.source != other.source {
             self.source.cmp(&other.source)
         } else if self.dest != other.dest {
@@ -510,7 +510,7 @@ impl FromStr for ChessMove {
             });
         }
 
-        Ok(ChessMove::new(source, dest, promo))
+        Ok(Self::new(source, dest, promo))
     }
 }
 
