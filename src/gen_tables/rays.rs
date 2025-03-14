@@ -19,10 +19,10 @@ pub fn gen_bishop_rays() {
             RAYS[BISHOP][src.into_index()] = ALL_SQUARES
                 .iter()
                 .filter(|dest| {
-                    let src_rank = src.get_rank().into_index() as i8;
-                    let src_file = src.get_file().into_index() as i8;
-                    let dest_rank = dest.get_rank().into_index() as i8;
-                    let dest_file = dest.get_file().into_index() as i8;
+                    let src_rank = src.get_rank() as i8;
+                    let src_file = src.get_file() as i8;
+                    let dest_rank = dest.get_rank() as i8;
+                    let dest_file = dest.get_file() as i8;
 
                     (src_rank - dest_rank).abs() == (src_file - dest_file).abs() && *src != **dest
                 })

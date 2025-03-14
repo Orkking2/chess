@@ -16,12 +16,12 @@ pub fn gen_lines() {
                 LINE[src.into_index()][dest.into_index()] = ALL_SQUARES
                     .iter()
                     .filter(|test| {
-                        let src_rank = src.get_rank().into_index() as i8;
-                        let src_file = src.get_file().into_index() as i8;
-                        let dest_rank = dest.get_rank().into_index() as i8;
-                        let dest_file = dest.get_file().into_index() as i8;
-                        let test_rank = test.get_rank().into_index() as i8;
-                        let test_file = test.get_file().into_index() as i8;
+                        let src_rank = src.get_rank() as i8;
+                        let src_file = src.get_file() as i8;
+                        let dest_rank = dest.get_rank() as i8;
+                        let dest_file = dest.get_file() as i8;
+                        let test_rank = test.get_rank() as i8;
+                        let test_file = test.get_file() as i8;
 
                         // test diagonals first
                         if (src_rank - dest_rank).abs() == (src_file - dest_file).abs()

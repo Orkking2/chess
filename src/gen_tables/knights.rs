@@ -14,10 +14,10 @@ pub fn gen_knight_moves() {
             KNIGHT_MOVES[src.into_index()] = ALL_SQUARES
                 .iter()
                 .filter(|dest| {
-                    let src_rank = src.get_rank().into_index() as i8;
-                    let src_file = src.get_file().into_index() as i8;
-                    let dest_rank = dest.get_rank().into_index() as i8;
-                    let dest_file = dest.get_file().into_index() as i8;
+                    let src_rank = src.get_rank() as i8;
+                    let src_file = src.get_file() as i8;
+                    let dest_rank = dest.get_rank() as i8;
+                    let dest_file = dest.get_file() as i8;
 
                     ((src_rank - dest_rank).abs() == 2 && (src_file - dest_file).abs() == 1)
                         || ((src_rank - dest_rank).abs() == 1 && (src_file - dest_file).abs() == 2)
