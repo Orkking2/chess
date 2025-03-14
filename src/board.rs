@@ -70,14 +70,15 @@ impl Hash for Board {
 }
 
 static STARTPOS: LazyLock<Board> = LazyLock::new(|| {
-    Board::from_str("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1").expect("Startpos FEN is valid FEN")
+    Board::from_str("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1")
+        .expect("Startpos FEN is valid FEN")
 });
 
 impl Board {
     /// Construct a new `Board` that is completely empty.
     /// Note: This does NOT give you the initial position.  Just a blank slate.
     #[inline]
-    const fn new() -> Board {
+    pub const fn new() -> Board {
         Board {
             pieces: [EMPTY; NUM_PIECES],
             color_combined: [EMPTY; NUM_COLORS],
@@ -886,29 +887,47 @@ impl Board {
         result
     }
 
-    /// Make a chess move on this board without creating a new one, returns `&mut Board` so you can chain operations.
-    ///
-    /// panic!() if king is captured.
-    ///
+    /// This function exists to mimick the functionality of `make_move`, internally it uses `make_moves_new`
+    /// 
     /// ```
-    /// use chess::{Board, ChessMove, Square, Color, BoardStatus};
-    ///
-    /// let mut board = Board::default();
+    /// use chess::{Board, ChessMove, Square, BoardStatus};
     /// 
-    /// board.make_move_mutref(ChessMove::new(Square::E2, Square::E4, None))
-    ///      .make_move_mutref(ChessMove::new(Square::F7, Square::F6, None))
-    ///      .make_move_mutref(ChessMove::new(Square::D2, Square::D4, None))
-    ///      .make_move_mutref(ChessMove::new(Square::G7, Square::G5, None))
-    ///      .make_move_mutref(ChessMove::new(Square::D1, Square::H5, None));
+    /// let moves = vec![ChessMove::new(Square::E2, Square::E4, None),
+    ///                  ChessMove::new(Square::F7, Square::F6, None),
+    ///                  ChessMove::new(Square::D2, Square::D4, None),
+    ///                  ChessMove::new(Square::G7, Square::G5, None),
+    ///                  ChessMove::new(Square::D1, Square::H5, None)];
     /// 
-    /// 
-    /// assert_eq!(board.status(), BoardStatus::Checkmate);
+    /// let board = Board::default();
+    /// let mut result = Board::new();
+    /// board.make_moves(moves, &mut result);
+    /// assert_eq!(result.status(), BoardStatus::Checkmate);
     /// ```
-    pub fn make_move_mutref(&mut self, m: ChessMove) -> &mut Self {
-        let mut result = Board::new();
-        self.make_move(m, &mut result);
-        *self = result;
-        self
+    #[inline]
+    pub fn make_moves<T: IntoIterator<Item = ChessMove>>(&self, moves: T, result: &mut Board) {
+        *result = self.make_moves_new(moves);
+    }
+
+    /// Apply a series of moves to a board.
+    /// 
+    /// ```
+    /// use chess::{Board, ChessMove, Square, BoardStatus};
+    /// 
+    /// let moves = vec![ChessMove::new(Square::E2, Square::E4, None),
+    ///                  ChessMove::new(Square::F7, Square::F6, None),
+    ///                  ChessMove::new(Square::D2, Square::D4, None),
+    ///                  ChessMove::new(Square::G7, Square::G5, None),
+    ///                  ChessMove::new(Square::D1, Square::H5, None)];
+    /// 
+    /// let board = Board::default();
+    /// let board2 = board.make_moves_new(moves);
+    /// assert_eq!(board2.status(), BoardStatus::Checkmate);
+    /// ```
+    #[inline]
+    pub fn make_moves_new<T: IntoIterator<Item = ChessMove>>(&self, moves: T) -> Board {
+        moves
+            .into_iter()
+            .fold(*self, |acc: Board, m| acc.make_move_new(m))
     }
 
     /// Make a chess move onto an already allocated `Board`.
@@ -923,7 +942,8 @@ impl Board {
     ///                        None);
     ///
     /// let board = Board::default();
-    /// let mut result = Board::default();
+    /// // It is generally less expensive to call Board::new() than Board::default()
+    /// let mut result = Board::new();
     /// board.make_move(m, &mut result);
     /// assert_eq!(result.side_to_move(), Color::Black);
     /// ```
