@@ -69,6 +69,15 @@ impl Hash for Board {
     }
 }
 
+/// The starting position of a chess board.
+/// This `static` is of type `LazyLock<Board>` so that it only has to be computed once.
+/// 
+/// ```
+/// use chess::{Board, STARTPOS};
+/// use std::str::FromStr;
+/// 
+/// assert_eq!(*STARTPOS, Board::from_str("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1").unwrap());
+/// ```
 pub static STARTPOS: LazyLock<Board> = LazyLock::new(|| {
     Board::from_str("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1")
         .expect("Startpos FEN is valid FEN")
@@ -76,7 +85,7 @@ pub static STARTPOS: LazyLock<Board> = LazyLock::new(|| {
 
 impl Board {
     /// Construct a new `Board` that is completely empty.
-    /// Note: This does NOT give you the initial position.  Just a blank slate.
+    /// Note: This does NOT give you the initial position. Just a blank slate.
     #[inline]
     pub const fn new() -> Board {
         Board {
