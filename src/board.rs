@@ -69,7 +69,7 @@ impl Hash for Board {
     }
 }
 
-static STARTPOS: LazyLock<Board> = LazyLock::new(|| {
+pub static STARTPOS: LazyLock<Board> = LazyLock::new(|| {
     Board::from_str("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1")
         .expect("Startpos FEN is valid FEN")
 });
