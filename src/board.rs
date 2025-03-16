@@ -683,11 +683,11 @@ impl Board {
                 0
             }
             ^ Zobrist::castles(
-                self.castle_rights[self.side_to_move.into_index()],
+                self.my_castle_rights(),
                 self.side_to_move,
             )
             ^ Zobrist::castles(
-                self.castle_rights[(!self.side_to_move).into_index()],
+                self.their_castle_rights(),
                 !self.side_to_move,
             )
             ^ Zobrist::color(self.side_to_move)
