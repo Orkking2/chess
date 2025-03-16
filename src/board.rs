@@ -635,16 +635,13 @@ impl Board {
         }
 
         // make sure the en_passant square has a pawn on it of the right color
-        match self.en_passant {
-            None => {}
-            Some(x) => {
-                if self.pieces(Piece::Pawn)
-                    & self.color_combined(!self.side_to_move)
-                    & BitBoard::from_square(x)
-                    == EMPTY
-                {
-                    return false;
-                }
+        if let Some(x) = self.en_passant {
+            if self.pieces(Piece::Pawn)
+                & self.color_combined(!self.side_to_move)
+                & BitBoard::from_square(x)
+                == EMPTY
+            {
+                return false;
             }
         }
 
