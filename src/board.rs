@@ -725,7 +725,7 @@ impl Board {
         }
     }
 
-    /// Get the piece on a particular `Square`, defaults to Piece::King after a full search of if/else tree.
+    /// Get the piece on a particular `Square`, it is undefined behaviour to call this function on an empty square.
     ///
     /// ```
     /// use chess::{Board, Piece, Square};
@@ -733,8 +733,8 @@ impl Board {
     /// let board = Board::default();
     ///
     /// assert_eq!(unsafe { board.piece_on_unchecked(Square::A1) }, Piece::Rook);
-    /// // Would be None if you called Board::piece_on(...), but will default to Piece::King instead.
-    /// assert_eq!(unsafe { board.piece_on_unchecked(Square::D4) }, Piece::King);
+    /// // The following is undefined behaviour
+    /// unsafe { board.piece_on_unchecked(Square::A4) };
     /// ```
     #[inline]
     pub unsafe fn piece_on_unchecked(&self, square: Square) -> Piece {
