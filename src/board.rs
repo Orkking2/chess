@@ -708,6 +708,14 @@ impl Board {
             })
     }
 
+    /// Get a hash that depends only on king and pawn placement and color change.
+    #[inline]
+    pub fn get_pawn_king_hash(&self) -> u64 {
+        self.get_pawn_hash()
+            ^ Zobrist::piece(Piece::King, self.king_square(Color::White), Color::White)
+            ^ Zobrist::piece(Piece::King, self.king_square(Color::Black), Color::Black)
+    }
+
     /// What piece is on a particular `Square`?  Is there even one?
     ///
     /// ```
