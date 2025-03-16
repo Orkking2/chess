@@ -1,10 +1,8 @@
 // This file generates 3 giant files, magic_gen.rs and zobrist_gen.rs
 // The purpose of this file is to create lookup tables that can be used during move generation.
 // This file has gotten pretty long and complicated, but hopefully the comments should allow
-
-#![allow(dead_code)]
-
 // it to be easily followed.
+
 use std::env;
 use std::fs::File;
 use std::path::Path;
