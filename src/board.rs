@@ -224,6 +224,23 @@ impl Board {
         unsafe { self.color_combined.get_unchecked(color.into_index()) }
     }
 
+    /// Get the set of pieces of a particular color.
+    ///
+    /// ```
+    /// use chess::{Board, BitBoard, Piece, Color, Square};
+    ///
+    /// let white_rooks = BitBoard::from_square(Square::A1) |
+    ///                   BitBoard::from_square(Square::H1);
+    ///
+    /// let board = Board::default();
+    ///
+    /// assert_eq!(board.piece_with_color(Piece::Rook, Color::White), white_rooks);
+    /// ```
+    #[inline]
+    pub fn pieces_with_color(&self, piece: Piece, color: Color) -> BitBoard {
+        self.pieces(piece) & self.color_combined(color)
+    }
+
     /// Give me the `Square` the `color` king is on.
     ///
     /// ```
@@ -236,7 +253,7 @@ impl Board {
     /// ```
     #[inline]
     pub fn king_square(&self, color: Color) -> Square {
-        (self.pieces(Piece::King) & self.color_combined(color)).to_square()
+        (self.pieces_with_color(Piece::King, color)).to_square()
     }
 
     /// Grab the "pieces" `BitBoard`.  This is a `BitBoard` with every piece of a particular type.
@@ -608,12 +625,12 @@ impl Board {
         }
 
         // make sure there is exactly one white king
-        if (self.pieces(Piece::King) & self.color_combined(Color::White)).popcnt() != 1 {
+        if self.pieces_with_color(Piece::King, Color::White).popcnt() != 1 {
             return false;
         }
 
         // make sure there is exactly one black king
-        if (self.pieces(Piece::King) & self.color_combined(Color::Black)).popcnt() != 1 {
+        if self.pieces_with_color(Piece::King, Color::Black).popcnt() != 1 {
             return false;
         }
 
@@ -657,7 +674,7 @@ impl Board {
             // if we have castle rights, make sure we have a king on the (E, {1,8}) square,
             // depending on the color
             if castle_rights != CastleRights::NoRights
-                && self.pieces(Piece::King) & self.color_combined(*color)
+                && self.pieces_with_color(Piece::King, *color)
                     != get_file(File::E) & get_rank(color.to_my_backrank())
             {
                 return false;
@@ -682,23 +699,17 @@ impl Board {
             } else {
                 0
             }
-            ^ Zobrist::castles(
-                self.my_castle_rights(),
-                self.side_to_move,
-            )
-            ^ Zobrist::castles(
-                self.their_castle_rights(),
-                !self.side_to_move,
-            )
+            ^ Zobrist::castles(self.my_castle_rights(), self.side_to_move)
+            ^ Zobrist::castles(self.their_castle_rights(), !self.side_to_move)
             ^ Zobrist::color(self.side_to_move)
     }
 
     /// Get a pawn hash of the board (a hash that only changes on color change and pawn moves).
     #[inline]
     pub fn get_pawn_hash(&self) -> u64 {
-        let white_pawns = self.pieces(Piece::Pawn) & self.color_combined(Color::White);
-        let black_pawns = self.pieces(Piece::Pawn) & self.color_combined(Color::Black);
-        
+        let white_pawns = self.pieces_with_color(Piece::Pawn, Color::White);
+        let black_pawns = self.pieces_with_color(Piece::Pawn, Color::Black);
+
         Zobrist::color(self.side_to_move)
             ^ white_pawns.into_iter().fold(0, |acc, square| {
                 acc ^ Zobrist::piece(Piece::Pawn, square, Color::White)
@@ -985,7 +996,7 @@ impl Board {
             source,
         ));
 
-        let opp_king = result.pieces(Piece::King) & result.color_combined(!result.side_to_move);
+        let opp_king = result.pieces_with_color(Piece::King, !result.side_to_move);
 
         let castles = moved == Piece::King && (move_bb & get_castle_moves()) == move_bb;
 
