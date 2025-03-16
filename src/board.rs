@@ -325,6 +325,7 @@ impl Board {
     /// let mut board = Board::default();
     /// assert_eq!(board.castle_rights(Color::White), CastleRights::Both);
     ///
+    /// #[allow(deprecated)]
     /// board.remove_castle_rights(Color::White, CastleRights::KingSide);
     /// assert_eq!(board.castle_rights(Color::White), CastleRights::QueenSide);
     /// ```
@@ -388,6 +389,7 @@ impl Board {
     /// let mut board = Board::default();
     /// assert_eq!(board.my_castle_rights(), CastleRights::Both);
     ///
+    /// #[allow(deprecated)]
     /// board.remove_my_castle_rights(CastleRights::KingSide);
     /// assert_eq!(board.my_castle_rights(), CastleRights::QueenSide);
     /// ```
@@ -437,6 +439,7 @@ impl Board {
     /// let mut board = Board::default();
     /// assert_eq!(board.their_castle_rights(), CastleRights::Both);
     ///
+    /// #[allow(deprecated)]
     /// board.remove_their_castle_rights(CastleRights::KingSide);
     /// assert_eq!(board.their_castle_rights(), CastleRights::QueenSide);
     /// ```
@@ -468,6 +471,7 @@ impl Board {
     ///
     /// let board = Board::default();
     ///
+    /// #[allow(deprecated)]
     /// let new_board = board.set_piece(Piece::Queen, Color::White, Square::E4)
     ///                      .expect("Valid Position");
     ///
@@ -517,6 +521,7 @@ impl Board {
     ///
     /// let board = Board::default();
     ///
+    /// #[allow(deprecated)]
     /// let new_board = board.clear_square(Square::A1)
     ///                      .expect("Valid Position");
     ///
