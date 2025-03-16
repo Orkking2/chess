@@ -47,15 +47,13 @@ pub enum BoardStatus {
 
 /// Construct the initial position.
 impl Default for Board {
-    /// ```text
-    /// ♜ ♞ ♝ ♛ ♚ ♝ ♞ ♜
-    /// ♟ ♟ ♟ ♟ ♟ ♟ ♟ ♟
-    /// . . . . . . . .
-    /// . . . . . . . .
-    /// . . . . . . . .
-    /// . . . . . . . .
-    /// ♙ ♙ ♙ ♙ ♙ ♙ ♙ ♙
-    /// ♖ ♘ ♗ ♕ ♔ ♗ ♘ ♖
+    /// A board set up with the initial position of all chess games.
+    ///
+    /// ```
+    /// use chess::Board;
+    /// use std::str::FromStr;
+    ///
+    /// assert_eq!(Board::default(), Board::from_str("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1").unwrap());
     /// ```
     #[inline]
     fn default() -> Board {
@@ -85,7 +83,12 @@ pub static STARTPOS: LazyLock<Board> = LazyLock::new(|| {
 
 impl Board {
     /// Construct a new `Board` that is completely empty.
-    /// Note: This does NOT give you the initial position. Just a blank slate.
+    ///
+    /// Note: This does **NOT** give you the initial position. Just a blank slate.
+    /// To obtain the initial position used in normal chess games, call `Board::default()`.
+    /// 
+    /// `Board::new()` is cheaper than the first call of `Board::default()` or first dereference of `STARTPOS` but is otherwise exactly as expensive,
+    /// as it is a simple `Copy` of a `Board`.
     #[inline]
     pub const fn new() -> Board {
         Board {
