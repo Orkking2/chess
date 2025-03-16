@@ -71,11 +71,11 @@ impl Hash for Board {
 
 /// The starting position of a chess board.
 /// This `static` is of type `LazyLock<Board>` so that it only has to be computed once.
-/// 
+///
 /// ```
 /// use chess::{Board, STARTPOS};
 /// use std::str::FromStr;
-/// 
+///
 /// assert_eq!(*STARTPOS, Board::from_str("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1").unwrap());
 /// ```
 pub static STARTPOS: LazyLock<Board> = LazyLock::new(|| {
@@ -338,7 +338,7 @@ impl Board {
     /// ```
     /// use chess::{Board, CastleRights};
     /// use std::str::FromStr;
-    /// 
+    ///
     /// let board = Board::from_str("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w Kq - 0 1").unwrap();
     ///
     /// assert_eq!(board.my_castle_rights(), CastleRights::KingSide);
@@ -387,7 +387,7 @@ impl Board {
     /// ```
     /// use chess::{Board, CastleRights};
     /// use std::str::FromStr;
-    /// 
+    ///
     /// let board = Board::from_str("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w Kq - 0 1").unwrap();
     ///
     /// assert_eq!(board.their_castle_rights(), CastleRights::QueenSide);
@@ -696,13 +696,16 @@ impl Board {
     /// Get a pawn hash of the board (a hash that only changes on color change and pawn moves).
     #[inline]
     pub fn get_pawn_hash(&self) -> u64 {
-        self.pieces(Piece::Pawn)
-            .into_iter()
-            .map(|square| (square, self.color_on(square).unwrap()))
-            .fold(
-                Zobrist::color(self.side_to_move),
-                |acc, (pawn_square, color)| acc ^ Zobrist::piece(Piece::Pawn, pawn_square, color),
-            )
+        let white_pawns = self.pieces(Piece::Pawn) & self.color_combined(Color::White);
+        let black_pawns = self.pieces(Piece::Pawn) & self.color_combined(Color::Black);
+        
+        Zobrist::color(self.side_to_move)
+            ^ white_pawns.into_iter().fold(0, |acc, square| {
+                acc ^ Zobrist::piece(Piece::Pawn, square, Color::White)
+            })
+            ^ black_pawns.into_iter().fold(0, |acc, square| {
+                acc ^ Zobrist::piece(Piece::Pawn, square, Color::White)
+            })
     }
 
     /// What piece is on a particular `Square`?  Is there even one?
@@ -884,16 +887,16 @@ impl Board {
     }
 
     /// This function exists to mimick the functionality of `make_move`, internally it uses `make_moves_new`
-    /// 
+    ///
     /// ```
     /// use chess::{Board, ChessMove, Square, BoardStatus};
-    /// 
+    ///
     /// let moves = [ChessMove::new(Square::E2, Square::E4, None),
     ///              ChessMove::new(Square::F7, Square::F6, None),
     ///              ChessMove::new(Square::D2, Square::D4, None),
     ///              ChessMove::new(Square::G7, Square::G5, None),
     ///              ChessMove::new(Square::D1, Square::H5, None)];
-    /// 
+    ///
     /// let board = Board::default();
     /// let mut result = Board::new();
     /// board.make_moves(moves, &mut result);
@@ -905,16 +908,16 @@ impl Board {
     }
 
     /// Apply a series of moves to a board.
-    /// 
+    ///
     /// ```
     /// use chess::{Board, ChessMove, Square, BoardStatus};
-    /// 
+    ///
     /// let moves = [ChessMove::new(Square::E2, Square::E4, None),
     ///              ChessMove::new(Square::F7, Square::F6, None),
     ///              ChessMove::new(Square::D2, Square::D4, None),
     ///              ChessMove::new(Square::G7, Square::G5, None),
     ///              ChessMove::new(Square::D1, Square::H5, None)];
-    /// 
+    ///
     /// let board = Board::default();
     /// let board2 = board.make_moves_new(moves);
     /// assert_eq!(board2.status(), BoardStatus::Checkmate);
