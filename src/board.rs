@@ -234,7 +234,7 @@ impl Board {
     ///
     /// let board = Board::default();
     ///
-    /// assert_eq!(board.piece_with_color(Piece::Rook, Color::White), white_rooks);
+    /// assert_eq!(board.pieces_with_color(Piece::Rook, Color::White), white_rooks);
     /// ```
     #[inline]
     pub fn pieces_with_color(&self, piece: Piece, color: Color) -> BitBoard {
