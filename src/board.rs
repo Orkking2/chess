@@ -253,7 +253,7 @@ impl Board {
     /// ```
     #[inline]
     pub fn king_square(&self, color: Color) -> Square {
-        (self.pieces_with_color(Piece::King, color)).to_square()
+        self.pieces_with_color(Piece::King, color).to_square()
     }
 
     /// Grab the "pieces" `BitBoard`.  This is a `BitBoard` with every piece of a particular type.
