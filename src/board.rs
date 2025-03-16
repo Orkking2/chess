@@ -336,17 +336,15 @@ impl Board {
         self.side_to_move
     }
 
-    // Todo Rewrite -- This doctest uses deprecated functions.
-    /// Literally `board.castle_rights(board.side_to_move())`
+    /// My `CastleRights`
     ///
     /// ```
-    /// use chess::{Board, Color, CastleRights};
+    /// use chess::{Board, CastleRights};
+    /// use std::str::FromStr;
+    /// 
+    /// let board = Board::from_str("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w Kq - 0 1").unwrap();
     ///
-    /// let mut board = Board::default();
-    /// board.remove_castle_rights(Color::White, CastleRights::KingSide);
-    /// board.remove_castle_rights(Color::Black, CastleRights::QueenSide);
-    ///
-    /// assert_eq!(board.my_castle_rights(), board.castle_rights(Color::White));
+    /// assert_eq!(board.my_castle_rights(), CastleRights::KingSide);
     /// ```
     #[inline]
     pub fn my_castle_rights(&self) -> CastleRights {
@@ -387,17 +385,15 @@ impl Board {
         self.remove_castle_rights(color, remove);
     }
 
-    // Todo Rewrite -- This doctest uses deprecated functions.
     /// My opponents `CastleRights`.
     ///
     /// ```
-    /// use chess::{Board, Color, CastleRights};
+    /// use chess::{Board, CastleRights};
+    /// use std::str::FromStr;
+    /// 
+    /// let board = Board::from_str("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w Kq - 0 1").unwrap();
     ///
-    /// let mut board = Board::default();
-    /// board.remove_castle_rights(Color::White, CastleRights::KingSide);
-    /// board.remove_castle_rights(Color::Black, CastleRights::QueenSide);
-    ///
-    /// assert_eq!(board.their_castle_rights(), board.castle_rights(Color::Black));
+    /// assert_eq!(board.their_castle_rights(), CastleRights::QueenSide);
     /// ```
     #[inline]
     pub fn their_castle_rights(&self) -> CastleRights {
