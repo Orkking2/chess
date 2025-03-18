@@ -1,4 +1,4 @@
-#![doc(html_root_url = "https://orkking2.github.io/chess/")]
+#![doc(html_root_url = "https://jordanbray.github.io/chess/")]
 #![cfg_attr(not(feature="std"), no_std)]
 //! # Rust Chess Library
 //! This is a chess move generation library for rust.  It is designed to be fast, so that it can be
