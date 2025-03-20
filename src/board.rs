@@ -18,7 +18,7 @@ use std::convert::{TryFrom, TryInto};
 use std::fmt;
 use std::hash::{Hash, Hasher};
 use std::str::FromStr;
-#[cfg(feature="std")]
+#[cfg(feature = "std")]
 use std::sync::LazyLock;
 
 /// A representation of a chess board.  That's why you're here, right?
@@ -57,7 +57,7 @@ impl Default for Board {
     /// assert_eq!(Board::default(), Board::from_str("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1").unwrap());
     /// ```
     #[inline(always)]
-    #[cfg(feature="std")]
+    #[cfg(feature = "std")]
     fn default() -> Board {
         *STARTPOS
     }
@@ -70,9 +70,10 @@ impl Default for Board {
     /// assert_eq!(Board::default(), Board::from_str("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1").unwrap());
     /// ```
     #[inline(always)]
-    #[cfg(not(feature="std"))]
+    #[cfg(not(feature = "std"))]
     fn default() -> Board {
-        Board::from_str("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1").unwrap()
+        Board::from_str("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1")
+            .expect("Startpos FEN is valid FEN")
     }
 }
 
@@ -91,7 +92,7 @@ impl Hash for Board {
 ///
 /// assert_eq!(*STARTPOS, Board::from_str("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1").unwrap());
 /// ```
-#[cfg(feature="std")]
+#[cfg(feature = "std")]
 pub static STARTPOS: LazyLock<Board> = LazyLock::new(|| {
     Board::from_str("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1")
         .expect("Startpos FEN is valid FEN")
@@ -102,7 +103,7 @@ impl Board {
     ///
     /// Note: This does **NOT** give you the initial position. Just a blank slate.
     /// To obtain the initial position used in normal chess games, call `Board::default()`.
-    /// 
+    ///
     /// `Board::new()` is cheaper than the first call of `Board::default()` or first dereference of `STARTPOS` but is otherwise exactly as expensive,
     /// as it is a simple `Copy` of a `Board`.
     #[inline(always)]
