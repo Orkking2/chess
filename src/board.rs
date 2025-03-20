@@ -55,7 +55,7 @@ impl Default for Board {
     ///
     /// assert_eq!(Board::default(), Board::from_str("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1").unwrap());
     /// ```
-    #[inline]
+    #[inline(always)]
     fn default() -> Board {
         *STARTPOS
     }
@@ -89,7 +89,7 @@ impl Board {
     /// 
     /// `Board::new()` is cheaper than the first call of `Board::default()` or first dereference of `STARTPOS` but is otherwise exactly as expensive,
     /// as it is a simple `Copy` of a `Board`.
-    #[inline]
+    #[inline(always)]
     pub const fn new() -> Board {
         Board {
             pieces: [EMPTY; NUM_PIECES],
@@ -127,7 +127,7 @@ impl Board {
         since = "3.1.0",
         note = "Internally this is a wrapper for `Board::from_str`, please use this function directly instead"
     )]
-    #[inline]
+    #[inline(always)]
     #[cfg(feature = "std")]
     pub fn from_fen(fen: String) -> Option<Board> {
         Board::from_str(&fen).ok()
@@ -137,7 +137,7 @@ impl Board {
         since = "3.0.0",
         note = "Internally this wraps `MoveGen::new_legal`, please use this structure instead"
     )]
-    #[inline]
+    #[inline(always)]
     pub fn enumerate_moves(&self, moves: &mut [ChessMove; 256]) -> usize {
         let movegen = MoveGen::new_legal(self);
         let mut size = 0;
@@ -173,7 +173,7 @@ impl Board {
     /// board = board.make_move_new(ChessMove::new(Square::D1, Square::H5, None));
     /// assert_eq!(board.status(), BoardStatus::Checkmate);
     /// ```
-    #[inline]
+    #[inline(always)]
     pub fn status(&self) -> BoardStatus {
         if !MoveGen::has_legals(self) {
             if self.checkers == EMPTY {
@@ -200,7 +200,7 @@ impl Board {
     ///
     /// assert_eq!(*board.combined(), combined_should_be);
     /// ```
-    #[inline]
+    #[inline(always)]
     pub const fn combined(&self) -> &BitBoard {
         &self.combined
     }
@@ -222,7 +222,7 @@ impl Board {
     /// assert_eq!(*board.color_combined(Color::White), white_pieces);
     /// assert_eq!(*board.color_combined(Color::Black), black_pieces);
     /// ```
-    #[inline]
+    #[inline(always)]
     pub fn color_combined(&self, color: Color) -> &BitBoard {
         unsafe { self.color_combined.get_unchecked(color.into_index()) }
     }
@@ -239,7 +239,7 @@ impl Board {
     ///
     /// assert_eq!(board.pieces_with_color(Piece::Rook, Color::White), white_rooks);
     /// ```
-    #[inline]
+    #[inline(always)]
     pub fn pieces_with_color(&self, piece: Piece, color: Color) -> BitBoard {
         self.pieces(piece) & self.color_combined(color)
     }
@@ -254,7 +254,7 @@ impl Board {
     /// assert_eq!(board.king_square(Color::White), Square::E1);
     /// assert_eq!(board.king_square(Color::Black), Square::E8);
     /// ```
-    #[inline]
+    #[inline(always)]
     pub fn king_square(&self, color: Color) -> Square {
         self.pieces_with_color(Piece::King, color).to_square()
     }
@@ -274,7 +274,7 @@ impl Board {
     ///
     /// assert_eq!(*board.pieces(Piece::Rook), rooks);
     /// ```
-    #[inline]
+    #[inline(always)]
     pub fn pieces(&self, piece: Piece) -> &BitBoard {
         unsafe { self.pieces.get_unchecked(piece.into_index()) }
     }
@@ -299,7 +299,7 @@ impl Board {
     /// assert_eq!(board.castle_rights(Color::White), CastleRights::KingSide);
     /// assert_eq!(board.castle_rights(Color::Black), CastleRights::NoRights);
     /// ```
-    #[inline]
+    #[inline(always)]
     pub fn castle_rights(&self, color: Color) -> CastleRights {
         unsafe { *self.castle_rights.get_unchecked(color.into_index()) }
     }
@@ -349,7 +349,7 @@ impl Board {
     /// let mut board = Board::default();
     /// assert_eq!(board.side_to_move(), Color::White);
     /// ```
-    #[inline]
+    #[inline(always)]
     pub const fn side_to_move(&self) -> Color {
         self.side_to_move
     }
@@ -364,7 +364,7 @@ impl Board {
     ///
     /// assert_eq!(board.my_castle_rights(), CastleRights::KingSide);
     /// ```
-    #[inline]
+    #[inline(always)]
     pub fn my_castle_rights(&self) -> CastleRights {
         self.castle_rights(self.side_to_move())
     }
@@ -414,7 +414,7 @@ impl Board {
     ///
     /// assert_eq!(board.their_castle_rights(), CastleRights::QueenSide);
     /// ```
-    #[inline]
+    #[inline(always)]
     pub fn their_castle_rights(&self) -> CastleRights {
         self.castle_rights(!self.side_to_move())
     }
@@ -455,6 +455,7 @@ impl Board {
     }
 
     /// Add or remove a piece from the bitboards in this struct.
+    #[inline(always)]
     fn xor(&mut self, piece: Piece, bb: BitBoard, color: Color) {
         unsafe {
             *self.pieces.get_unchecked_mut(piece.into_index()) ^= bb;
@@ -579,7 +580,7 @@ impl Board {
     ///
     /// assert_eq!(new_board.side_to_move(), Color::Black);
     /// ```
-    #[inline]
+    #[inline(always)]
     pub fn null_move(&self) -> Option<Board> {
         if self.checkers != EMPTY {
             None
@@ -725,7 +726,7 @@ impl Board {
     }
 
     /// Get a hash that depends only on king and pawn placement and color change.
-    #[inline]
+    #[inline(always)]
     pub fn get_pawn_king_hash(&self) -> u64 {
         self.get_pawn_hash()
             ^ Zobrist::piece(Piece::King, self.king_square(Color::White), Color::White)
@@ -742,7 +743,7 @@ impl Board {
     /// assert_eq!(board.piece_on(Square::A1), Some(Piece::Rook));
     /// assert_eq!(board.piece_on(Square::D4), None);
     /// ```
-    #[inline]
+    #[inline(always)]
     pub fn piece_on(&self, square: Square) -> Option<Piece> {
         let opp = BitBoard::from_square(square);
         if self.combined() & opp == EMPTY {
@@ -815,6 +816,7 @@ impl Board {
     }
 
     /// Unset the en_passant square.
+    #[inline(always)]
     fn remove_ep(&mut self) {
         self.en_passant = None;
     }
@@ -833,7 +835,7 @@ impl Board {
     ///
     /// assert_eq!(board.en_passant(), Some(Square::E5));
     /// ```
-    #[inline]
+    #[inline(always)]
     pub const fn en_passant(&self) -> Option<Square> {
         self.en_passant
     }
@@ -852,7 +854,7 @@ impl Board {
     ///
     /// assert_eq!(board.en_passant_target(), Some(Square::E6));
     /// ```
-    #[inline]
+    #[inline(always)]
     pub fn en_passant_target(&self) -> Option<Square> {
         let color = !self.side_to_move();
         self.en_passant().map(|square| square.ubackward(color))
@@ -860,6 +862,7 @@ impl Board {
 
     /// Set the en_passant square.  Note: This must only be called when self.en_passant is already
     /// None.
+    #[inline]
     fn set_ep(&mut self, sq: Square) {
         // Only set self.en_passant if the pawn can actually be captured next move.
         if get_adjacent_files(sq.get_file())
@@ -886,7 +889,7 @@ impl Board {
     /// assert_eq!(board.legal(m1), true);
     /// assert_eq!(board.legal(m2), false);
     /// ```
-    #[inline]
+    #[inline(always)]
     pub fn legal(&self, m: ChessMove) -> bool {
         MoveGen::new_legal(&self).any(|x| x == m)
     }
@@ -903,7 +906,7 @@ impl Board {
     /// let board = Board::default();
     /// assert_eq!(board.make_move_new(m).side_to_move(), Color::Black);
     /// ```
-    #[inline]
+    #[inline(always)]
     pub fn make_move_new(&self, m: ChessMove) -> Board {
         let mut result = Board::new();
         self.make_move(m, &mut result);
@@ -926,7 +929,7 @@ impl Board {
     /// board.make_moves(moves, &mut result);
     /// assert_eq!(result.status(), BoardStatus::Checkmate);
     /// ```
-    #[inline]
+    #[inline(always)]
     pub fn make_moves<T: IntoIterator<Item = ChessMove>>(&self, moves: T, result: &mut Board) {
         *result = self.make_moves_new(moves);
     }
@@ -946,7 +949,7 @@ impl Board {
     /// let board2 = board.make_moves_new(moves);
     /// assert_eq!(board2.status(), BoardStatus::Checkmate);
     /// ```
-    #[inline]
+    #[inline(always)]
     pub fn make_moves_new<T: IntoIterator<Item = ChessMove>>(&self, moves: T) -> Board {
         moves
             .into_iter()
@@ -1116,13 +1119,13 @@ impl Board {
     }
 
     /// Give me the `BitBoard` of my pinned pieces.
-    #[inline]
+    #[inline(always)]
     pub fn pinned(&self) -> &BitBoard {
         &self.pinned
     }
 
     /// Give me the `Bitboard` of the pieces putting me in check.
-    #[inline]
+    #[inline(always)]
     pub fn checkers(&self) -> &BitBoard {
         &self.checkers
     }

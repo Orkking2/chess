@@ -50,19 +50,19 @@ impl File {
     }
 
     /// Go one file to the left.  If impossible, wrap around.
-    #[inline]
+    #[inline(always)]
     pub const fn left(&self) -> File {
         File::from_index(self.into_index().wrapping_sub(1))
     }
 
     /// Go one file to the right.  If impossible, wrap around.
-    #[inline]
+    #[inline(always)]
     pub const fn right(&self) -> File {
         File::from_index(self.into_index() + 1)
     }
 
     /// Convert this `File` into a `usize` from 0 to 7 inclusive.
-    #[inline]
+    #[inline(always)]
     pub const fn into_index(self) -> usize {
         self as usize
     }
