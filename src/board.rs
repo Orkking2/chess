@@ -18,6 +18,7 @@ use std::convert::{TryFrom, TryInto};
 use std::fmt;
 use std::hash::{Hash, Hasher};
 use std::str::FromStr;
+#[cfg(feature="std")]
 use std::sync::LazyLock;
 
 /// A representation of a chess board.  That's why you're here, right?
@@ -56,8 +57,22 @@ impl Default for Board {
     /// assert_eq!(Board::default(), Board::from_str("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1").unwrap());
     /// ```
     #[inline(always)]
+    #[cfg(feature="std")]
     fn default() -> Board {
         *STARTPOS
+    }
+
+    /// A board set up with the initial position of all chess games.
+    /// ```
+    /// use chess::Board;
+    /// use std::str::FromStr;
+    ///
+    /// assert_eq!(Board::default(), Board::from_str("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1").unwrap());
+    /// ```
+    #[inline(always)]
+    #[cfg(not(feature="std"))]
+    fn default() -> Board {
+        Board::from_str("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1").unwrap()
     }
 }
 
@@ -76,6 +91,7 @@ impl Hash for Board {
 ///
 /// assert_eq!(*STARTPOS, Board::from_str("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1").unwrap());
 /// ```
+#[cfg(feature="std")]
 pub static STARTPOS: LazyLock<Board> = LazyLock::new(|| {
     Board::from_str("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1")
         .expect("Startpos FEN is valid FEN")
