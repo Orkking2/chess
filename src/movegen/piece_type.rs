@@ -27,7 +27,7 @@ pub trait PieceType {
         unoccupied_by_me: BitBoard,
     ) -> BitBoard;
 
-    #[inline]
+    #[inline(always)]
     fn legals<const IN_CHECK: bool>(
         movelist: &mut MoveList,
         board: &Board,
@@ -70,7 +70,7 @@ pub trait PieceType {
         }
     }
 
-    #[inline]
+    #[inline(always)]
     fn has_legals<const IN_CHECK: bool>(board: &Board, unoccupied_by_me: BitBoard) -> bool {
         let combined = board.combined();
         let color = board.side_to_move();
@@ -117,7 +117,7 @@ pub struct KingType;
 
 impl PawnType {
     /// Is a particular en-passant capture legal?
-    #[inline]
+    #[inline(always)]
     pub fn legal_ep_move(board: &Board, source: Square, dest: Square) -> bool {
         let combined = board.combined()
             ^ BitBoard::from_square(board.en_passant().unwrap())
@@ -163,7 +163,7 @@ impl PieceType for PawnType {
         get_pawn_moves(src, color, combined) & unoccupied_by_me
     }
 
-    #[inline]
+    #[inline(always)]
     fn legals<const IN_CHECK: bool>(
         movelist: &mut MoveList,
         board: &Board,
@@ -232,7 +232,7 @@ impl PieceType for PawnType {
         }
     }
 
-    #[inline]
+    #[inline(always)]
     fn has_legals<const IN_CHECK: bool>(
         board: &Board,
         unoccupied_by_me: BitBoard,
@@ -328,7 +328,7 @@ impl PieceType for KnightType {
         get_knight_moves(src) & unoccupied_by_me
     }
 
-    #[inline]
+    #[inline(always)]
     fn legals<const IN_CHECK: bool>(
         movelist: &mut MoveList,
         board: &Board,
@@ -367,7 +367,7 @@ impl PieceType for KnightType {
         };
     }
 
-    #[inline]
+    #[inline(always)]
     fn has_legals<const IN_CHECK: bool>(
         board: &Board,
         unoccupied_by_me: BitBoard,
@@ -448,7 +448,7 @@ impl PieceType for QueenType {
 
 impl KingType {
     /// Is a particular king move legal?
-    #[inline]
+    #[inline(always)]
     pub fn legal_king_move(board: &Board, dest: Square) -> bool {
         let combined = board.combined()
             ^ (board.pieces(Piece::King) & board.color_combined(board.side_to_move()))
@@ -504,7 +504,7 @@ impl PieceType for KingType {
         get_king_moves(src) & unoccupied_by_me
     }
 
-    #[inline]
+    #[inline(always)]
     fn legals<const IN_CHECK: bool>(
         movelist: &mut MoveList,
         board: &Board,
@@ -563,7 +563,7 @@ impl PieceType for KingType {
         }
     }
 
-    #[inline]
+    #[inline(always)]
     fn has_legals<const IN_CHECK: bool>(
         board: &Board,
         unoccupied_by_me: BitBoard,
