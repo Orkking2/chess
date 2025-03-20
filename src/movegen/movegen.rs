@@ -121,7 +121,7 @@ impl MoveGen {
     }
 
     /// Does a particular board have *any* legal moves?
-    /// 
+    ///
     /// This function does not evaluate any moves past the first one it finds and so is guaranteed
     /// to take less than or equal to time as `new_legal`.
     #[inline(always)]

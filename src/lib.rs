@@ -1,5 +1,5 @@
 #![doc(html_root_url = "https://jordanbray.github.io/chess/")]
-#![cfg_attr(not(feature="std"), no_std)]
+#![cfg_attr(not(feature = "std"), no_std)]
 //! # Rust Chess Library
 //! This is a chess move generation library for rust.  It is designed to be fast, so that it can be
 //! used in a chess engine or UI without performance issues.
@@ -19,7 +19,7 @@
 //! ```
 //!
 
-#[cfg(not(feature="std"))]
+#[cfg(not(feature = "std"))]
 extern crate core as std;
 
 mod board;
@@ -28,9 +28,9 @@ pub use crate::board::*;
 mod bitboard;
 pub use crate::bitboard::{BitBoard, EMPTY};
 
-#[cfg(feature="std")]
+#[cfg(feature = "std")]
 mod cache_table;
-#[cfg(feature="std")]
+#[cfg(feature = "std")]
 pub use crate::cache_table::*;
 
 mod castle_rights;
@@ -72,9 +72,9 @@ pub use crate::movegen::MoveGen;
 
 mod zobrist;
 
-#[cfg(feature="std")]
+#[cfg(feature = "std")]
 mod game;
-#[cfg(feature="std")]
+#[cfg(feature = "std")]
 pub use crate::game::{Action, Game, GameResult};
 
 mod board_builder;
