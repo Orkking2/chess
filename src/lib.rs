@@ -42,9 +42,6 @@ pub use crate::chess_move::*;
 mod color;
 pub use crate::color::*;
 
-mod construct;
-pub use crate::construct::*;
-
 mod file;
 pub use crate::file::*;
 
