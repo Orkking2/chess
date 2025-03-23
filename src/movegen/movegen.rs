@@ -123,7 +123,7 @@ impl MoveGen {
     /// Does a particular board have *any* legal moves?
     ///
     /// This function does not evaluate any moves past the first one it finds and so is guaranteed
-    /// to take less than or equal to time as `new_legal`.
+    /// to take less than or equal time as `new_legal`.
     #[inline(always)]
     pub fn has_legals(board: &Board) -> bool {
         let checkers = *board.checkers();
@@ -252,16 +252,12 @@ impl MoveGen {
     /// Fastest perft test with this structure
     pub fn movegen_perft_test(board: &Board, depth: usize) -> usize {
         let iterable = MoveGen::new_legal(board);
-
-        let mut result: usize = 0;
         if depth == 1 {
             iterable.len()
         } else {
-            for m in iterable {
-                let bresult = board.make_move_new(m);
-                result += MoveGen::movegen_perft_test(&bresult, depth - 1);
-            }
-            result
+            iterable.fold(0, |acc, m| {
+                acc + MoveGen::movegen_perft_test(&board.make_move_new(m), depth - 1)
+            })
         }
     }
 
@@ -330,6 +326,7 @@ impl Iterator for MoveGen {
     }
 
     /// Find the next chess move.
+    #[inline]
     fn next(&mut self) -> Option<ChessMove> {
         if self.index >= self.moves.len()
             || self.moves[self.index].bitboard & self.iterator_mask == EMPTY
