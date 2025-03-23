@@ -36,8 +36,8 @@ pub fn get_rook_moves(sq: Square, blockers: BitBoard) -> BitBoard {
 }
 
 /// Get the moves for a rook on a particular square, given blockers blocking my movement.
-#[cfg(target_feature = "bmi2")]
 #[inline]
+#[cfg(target_feature = "bmi2")]
 pub fn get_rook_moves_bmi(sq: Square, blockers: BitBoard) -> BitBoard {
     unsafe {
         let bmi2_magic = *ROOK_BMI_MASK.get_unchecked(sq.to_int() as usize);
