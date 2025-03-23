@@ -414,7 +414,7 @@ impl Board {
         since = "3.1.0",
         note = "When doing board setup, use the BoardBuilder structure.  It ensures you don't end up with an invalid position."
     )]
-    #[inline]
+    #[inline(always)]
     pub fn remove_my_castle_rights(&mut self, remove: CastleRights) {
         let color = self.side_to_move();
         #[allow(deprecated)]
@@ -464,7 +464,7 @@ impl Board {
         since = "3.1.0",
         note = "When doing board setup, use the BoardBuilder structure.  It ensures you don't end up with an invalid position."
     )]
-    #[inline]
+    #[inline(always)]
     pub fn remove_their_castle_rights(&mut self, remove: CastleRights) {
         let color = !self.side_to_move();
         #[allow(deprecated)]
